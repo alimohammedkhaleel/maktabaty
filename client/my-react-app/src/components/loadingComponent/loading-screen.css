@@ -1,0 +1,128 @@
+.loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: linear-gradient(145deg, #F4E6D4 0%, #E6D5B8 50%, #D2B48C 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  overflow: hidden;
+}
+
+.loading-screen::before {
+  content: '';
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 30% 40%, rgba(139, 115, 85, 0.1) 0%, transparent 40%),
+              radial-gradient(circle at 70% 60%, rgba(158, 123, 86, 0.1) 0%, transparent 40%);
+  animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.book-loader {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+  position: relative;
+  z-index: 2;
+  perspective: 800px;
+}
+
+.loader-page {
+  width: 40px;
+  height: 50px;
+  border-radius: 3px 8px 8px 3px;
+  animation: pageGlow 2s infinite alternate;
+  box-shadow: 
+    0 10px 20px rgba(0,0,0,0.1),
+    inset 2px 0 5px rgba(255,255,255,0.5);
+  transform-origin: left center;
+  position: relative;
+}
+
+.loader-page::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  bottom: 2px;
+  left: 5px;
+  background: linear-gradient(to right, rgba(255,255,255,0.3), transparent);
+  border-radius: 2px;
+}
+
+@keyframes pageGlow {
+  0% {
+    filter: brightness(1);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+  }
+  100% {
+    filter: brightness(1.1);
+    box-shadow: 0 15px 30px rgba(139, 115, 85, 0.3);
+  }
+}
+
+.loading-text {
+  color: #4A3B2A;
+  font-size: 1.4rem;
+  font-weight: 500;
+  margin-top: 20px;
+  position: relative;
+  z-index: 2;
+  text-shadow: 2px 2px 4px rgba(255,255,255,0.5);
+  font-family: 'Arial', sans-serif;
+  letter-spacing: 2px;
+}
+
+
+
+/* استجابة للشاشات الصغيرة */
+@media (max-width: 768px) {
+  .loader-page {
+    width: 30px;
+    height: 40px;
+  }
+
+  .loading-text {
+    font-size: 1.1rem;
+  }
+}
+
+/* تحسين للشاشات الكبيرة */
+@media (min-width: 1200px) {
+  .loader-page {
+    width: 50px;
+    height: 65px;
+  }
+
+  .loading-text {
+    font-size: 1.8rem;
+  }
+}
+
+/* دعم تقليل الحركة */
+@media (prefers-reduced-motion: reduce) {
+  .loading-screen::before,
+  .loading-screen::after,
+  .loader-page,
+  .loading-text {
+    animation: none;
+  }
+  
+  .book-loader {
+    gap: 10px;
+  }
+}

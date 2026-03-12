@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "name": "maktabaty",
+  "builds": [
+    {
+      "src": "client/my-react-app/package.json",
+      "use": "@vercel/static-build",
+      "config": {
+        "distDir": "client/my-react-app/dist"
+      }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "buildCommand": "cd client/my-react-app && npm install && npm run build",
+  "outputDirectory": "client/my-react-app/dist",
+  "framework": "vite"
+}

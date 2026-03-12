@@ -1,0 +1,930 @@
+/* متغيرات الألوان */
+:root {
+  --admin-primary: #2c5c34;
+  --admin-primary-light: #3d7d42;
+  --admin-primary-dark: #1a3c1a;
+  --admin-accent-gold: #d4af37;
+  --admin-accent-light: #f5f7f3;
+  --admin-text-primary: #2c3e50;
+  --admin-text-secondary: #5a6c7e;
+  --admin-text-light: #7f8c8d;
+  --admin-success: #27ae60;
+  --admin-error: #e74c3c;
+  --admin-warning: #f39c12;
+  --admin-info: #3498db;
+  --admin-manual: #9b59b6;
+  --admin-border: #e0e0e0;
+  --admin-bg-light: #f8f9fa;
+  --admin-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+  --admin-shadow-md: 0 8px 20px rgba(0, 0, 0, 0.08);
+  --admin-shadow-lg: 0 12px 30px rgba(0, 0, 0, 0.12);
+  --admin-transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --admin-radius-sm: 8px;
+  --admin-radius-md: 12px;
+  --admin-radius-lg: 20px;
+}
+
+.admin-dashboard {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7f3 0%, #e8ebe3 100%);
+  padding: 100px 20px 40px;
+  font-family: 'Cairo', 'Poppins', sans-serif;
+  direction: rtl;
+}
+
+/* الهيدر */
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  gap: 20px;
+  flex-wrap: wrap;
+  background: white;
+  padding: 25px 30px;
+  border-radius: var(--admin-radius-lg);
+  box-shadow: var(--admin-shadow-md);
+}
+
+.admin-header .header-content h1 {
+  font-size: 32px;
+  color: var(--admin-primary);
+  margin: 0;
+  margin-bottom: 5px;
+  font-weight: 700;
+}
+
+.admin-header .header-content p {
+  color: var(--admin-text-secondary);
+  margin: 0;
+  font-size: 14px;
+}
+
+/* زر إضافة كتاب */
+.admin-btn-add-book {
+  padding: 14px 28px;
+  background: linear-gradient(135deg, var(--admin-primary), var(--admin-primary-light));
+  color: white;
+  border: none;
+  border-radius: var(--admin-radius-md);
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--admin-transition);
+  font-family: 'Cairo', sans-serif;
+  box-shadow: 0 8px 20px rgba(44, 92, 52, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-btn-add-book:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(44, 92, 52, 0.3);
+  background: linear-gradient(135deg, var(--admin-primary-dark), var(--admin-primary));
+}
+
+/* شريط البحث */
+.admin-search-bar {
+  position: relative;
+  margin-bottom: 30px;
+  max-width: 600px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: 0;
+}
+
+.admin-search-bar .search-icon {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--admin-primary);
+  font-size: 18px;
+  opacity: 0.7;
+}
+
+.admin-search-bar input {
+  width: 100%;
+  padding: 16px 50px 16px 20px;
+  border: 2px solid var(--admin-border);
+  border-radius: var(--admin-radius-lg);
+  background: white;
+  font-size: 16px;
+  font-family: 'Cairo', sans-serif;
+  transition: all var(--admin-transition);
+  box-shadow: var(--admin-shadow-sm);
+}
+
+.admin-search-bar input:focus {
+  border-color: var(--admin-primary);
+  box-shadow: 0 0 0 4px rgba(44, 92, 52, 0.1);
+  outline: none;
+}
+
+/* رسالة الخطأ */
+.admin-error-banner {
+  background: rgba(231, 76, 60, 0.1);
+  border: 2px solid var(--admin-error);
+  color: var(--admin-error);
+  padding: 16px 24px;
+  border-radius: var(--admin-radius-md);
+  margin-bottom: 25px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  animation: adminSlideDown 0.4s ease-out;
+  font-weight: 500;
+}
+
+@keyframes adminSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.admin-error-banner button {
+  background: none;
+  border: none;
+  color: var(--admin-error);
+  cursor: pointer;
+  font-size: 20px;
+  transition: transform var(--admin-transition);
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-error-banner button:hover {
+  transform: scale(1.2);
+}
+
+/* Modal Overlay */
+.admin-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10001;
+  padding: 20px;
+  backdrop-filter: blur(5px);
+}
+
+.admin-modal-content {
+  background: white;
+  border-radius: var(--admin-radius-lg);
+  padding: 40px;
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--admin-shadow-lg);
+  position: relative;
+}
+
+.admin-modal-content h2 {
+  text-align: center;
+  color: var(--admin-primary);
+  font-size: 28px;
+  margin-bottom: 30px;
+  font-weight: 700;
+}
+
+.admin-close-btn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: var(--admin-text-light);
+  transition: all var(--admin-transition);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--admin-bg-light);
+}
+
+.admin-close-btn:hover {
+  color: var(--admin-error);
+  background: rgba(231, 76, 60, 0.1);
+  transform: rotate(90deg);
+}
+
+/* نموذج الكتاب */
+.admin-book-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.admin-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.admin-form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-full-width {
+  grid-column: 1 / -1;
+}
+
+.admin-form-group label {
+  color: var(--admin-primary);
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.admin-form-group input,
+.admin-form-group textarea,
+.admin-form-group select {
+  padding: 12px 15px;
+  border: 2px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
+  font-size: 14px;
+  font-family: 'Cairo', sans-serif;
+  transition: all var(--admin-transition);
+  background: var(--admin-bg-light);
+}
+
+.admin-form-group input:focus,
+.admin-form-group textarea:focus,
+.admin-form-group select:focus {
+  border-color: var(--admin-primary);
+  box-shadow: 0 0 0 4px rgba(44, 92, 52, 0.1);
+  outline: none;
+  background: white;
+}
+
+.admin-form-group input[type="file"] {
+  padding: 10px;
+  background: white;
+  cursor: pointer;
+}
+
+.admin-file-preview {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--admin-primary);
+  background: rgba(44, 92, 52, 0.1);
+  padding: 8px 12px;
+  border-radius: var(--admin-radius-sm);
+}
+
+.admin-form-actions {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+  border-top: 2px solid var(--admin-bg-light);
+  padding-top: 20px;
+}
+
+.admin-btn-submit,
+.admin-btn-cancel,
+.admin-btn-generate {
+  flex: 1;
+  padding: 14px;
+  border: none;
+  border-radius: var(--admin-radius-md);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Cairo', sans-serif;
+  transition: all var(--admin-transition);
+}
+
+.admin-btn-submit {
+  background: linear-gradient(135deg, var(--admin-primary), var(--admin-primary-light));
+  color: white;
+  box-shadow: 0 5px 15px rgba(44, 92, 52, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.admin-btn-submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(44, 92, 52, 0.3);
+  background: linear-gradient(135deg, var(--admin-primary-dark), var(--admin-primary));
+}
+
+.admin-btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.admin-btn-cancel {
+  background: var(--admin-bg-light);
+  color: var(--admin-text-primary);
+  border: 2px solid var(--admin-border);
+}
+
+.admin-btn-cancel:hover {
+  background: #e0e0e0;
+  border-color: var(--admin-text-light);
+}
+
+.admin-btn-generate {
+  background: var(--admin-info);
+  color: white;
+}
+
+.admin-btn-generate:hover {
+  background: #2980b9;
+}
+
+/* شبكة الكتب */
+.admin-books-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 30px;
+  margin-bottom: 40px;
+}
+
+/* بطاقة الكتاب */
+.admin-book-card {
+  background: white;
+  border-radius: var(--admin-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--admin-shadow-md);
+  transition: all var(--admin-transition);
+  display: flex;
+  flex-direction: column;
+  height: auto;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.admin-book-card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--admin-shadow-lg);
+}
+
+/* غلاف الكتاب - أيقونة فقط */
+.admin-book-cover {
+  width: 100%;
+  height: 180px;
+  background: linear-gradient(135deg, var(--admin-primary), var(--admin-primary-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.admin-book-icon {
+  font-size: 90px;
+  color: white;
+  opacity: 0.9;
+  filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.2));
+}
+
+/* معلومات الكتاب */
+.admin-book-info {
+  padding: 25px 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.admin-book-info h3 {
+  color: var(--admin-primary);
+  font-size: 22px;
+  margin: 0 0 5px 0;
+  line-height: 1.4;
+  font-weight: 700;
+  white-space: normal;
+  overflow: visible;
+  display: block;
+}
+
+.admin-book-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.admin-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--admin-text-secondary);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.admin-meta-icon {
+  width: 18px;
+  color: var(--admin-primary-light);
+  opacity: 0.8;
+}
+
+.admin-meta-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.admin-description {
+  color: var(--admin-text-secondary);
+  font-size: 14px;
+  line-height: 1.7;
+  margin: 10px 0 15px;
+  padding-top: 15px;
+  border-top: 1px solid var(--admin-bg-light);
+  display: block;
+  overflow: visible;
+  white-space: normal;
+  min-height: auto;
+  max-height: none;
+}
+
+.admin-pdf-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(231, 76, 60, 0.1);
+  color: var(--admin-error);
+  padding: 10px 18px;
+  border-radius: var(--admin-radius-md);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all var(--admin-transition);
+  margin-top: 5px;
+  width: fit-content;
+}
+
+.admin-pdf-link:hover {
+  background: var(--admin-error);
+  color: white;
+  gap: 15px;
+}
+
+/* أزرار الكتاب */
+.admin-book-actions {
+  padding: 20px;
+  background: var(--admin-bg-light);
+  border-top: 1px solid var(--admin-border);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: auto;
+}
+
+.admin-actions-primary {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.admin-btn-icon {
+  width: 45px;
+  height: 45px;
+  border: none;
+  border-radius: var(--admin-radius-md);
+  cursor: pointer;
+  font-size: 18px;
+  transition: all var(--admin-transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  box-shadow: var(--admin-shadow-sm);
+}
+
+.admin-btn-edit {
+  color: var(--admin-success);
+  border: 1px solid rgba(39, 174, 96, 0.2);
+}
+
+.admin-btn-edit:hover {
+  background: var(--admin-success);
+  color: white;
+  border-color: var(--admin-success);
+}
+
+.admin-btn-delete {
+  color: var(--admin-error);
+  border: 1px solid rgba(231, 76, 60, 0.2);
+}
+
+.admin-btn-delete:hover {
+  background: var(--admin-error);
+  color: white;
+  border-color: var(--admin-error);
+}
+
+.admin-actions-quiz {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-btn-quiz {
+  flex: 1;
+  min-width: 100px;
+  padding: 10px 12px;
+  border: none;
+  border-radius: var(--admin-radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--admin-transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: 'Cairo', sans-serif;
+}
+
+.admin-btn-manual {
+  background: linear-gradient(135deg, var(--admin-manual), #8e44ad);
+  color: white;
+  border: 1px solid rgba(155, 89, 182, 0.3);
+}
+
+.admin-btn-manual:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(155, 89, 182, 0.3);
+}
+
+.admin-btn-create {
+  background: linear-gradient(135deg, var(--admin-accent-gold), #f1c40f);
+  color: var(--admin-primary-dark);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.admin-btn-create:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+}
+
+.admin-btn-generate {
+  background: linear-gradient(135deg, var(--admin-info), #2980b9);
+  color: white;
+}
+
+.admin-btn-generate:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+}
+
+.admin-btn-generate:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  background: var(--admin-text-light);
+}
+
+.admin-quiz-actions {
+  display: flex;
+  gap: 5px;
+  width: 100%;
+  align-items: center;
+}
+
+.admin-quiz-badge {
+  background: var(--admin-primary);
+  color: white;
+  padding: 5px 10px;
+  border-radius: var(--admin-radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.admin-btn-regenerate {
+  background: var(--admin-warning);
+  color: white;
+  min-width: 40px;
+  flex: 0.5;
+  padding: 10px;
+}
+
+.admin-btn-regenerate:hover {
+  background: #e67e22;
+  transform: translateY(-2px);
+}
+
+.admin-btn-delete-quiz {
+  background: var(--admin-error);
+  color: white;
+  min-width: 40px;
+  flex: 0.5;
+  padding: 10px;
+}
+
+.admin-btn-delete-quiz:hover {
+  background: #c0392b;
+  transform: translateY(-2px);
+}
+
+/* Quiz review styles */
+.admin-quiz-review .admin-questions-list {
+  max-height: 50vh;
+  overflow-y: auto;
+  margin-bottom: 30px;
+  padding: 10px;
+  background: var(--admin-bg-light);
+  border-radius: var(--admin-radius-md);
+}
+
+.admin-generated-question {
+  background: white;
+  border: 1px solid var(--admin-border);
+  padding: 20px;
+  border-radius: var(--admin-radius-md);
+  margin-bottom: 15px;
+  box-shadow: var(--admin-shadow-sm);
+}
+
+.admin-generated-question textarea {
+  width: 100%;
+  min-height: 80px;
+  margin-bottom: 15px;
+  padding: 12px;
+  border: 2px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
+  font-family: 'Cairo', sans-serif;
+  resize: vertical;
+}
+
+.admin-options-edit {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.admin-option-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--admin-bg-light);
+  padding: 8px 12px;
+  border-radius: var(--admin-radius-sm);
+}
+
+.admin-option-row input[type="text"] {
+  flex: 1;
+  padding: 8px 12px;
+  border: 2px solid var(--admin-border);
+  border-radius: var(--admin-radius-sm);
+  font-family: 'Cairo', sans-serif;
+}
+
+.admin-option-row label {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  color: var(--admin-success);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.admin-question-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.admin-btn-save {
+  background: var(--admin-success);
+  color: white;
+  padding: 8px 20px;
+  border: none;
+  border-radius: var(--admin-radius-sm);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all var(--admin-transition);
+}
+
+.admin-btn-save:hover {
+  background: #219a52;
+  transform: translateY(-2px);
+}
+
+.admin-add-question-section {
+  border-top: 2px dashed var(--admin-border);
+  padding-top: 25px;
+  margin-top: 25px;
+}
+
+.admin-add-question-section h3 {
+  color: var(--admin-primary);
+  margin-bottom: 20px;
+  font-size: 20px;
+}
+
+.admin-new-question-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.admin-new-question-form textarea {
+  width: 100%;
+  min-height: 80px;
+  padding: 12px;
+  border: 2px solid var(--admin-border);
+  border-radius: var(--admin-radius-md);
+  font-family: 'Cairo', sans-serif;
+  resize: vertical;
+}
+
+.admin-btn-add-question {
+  background: var(--admin-primary);
+  color: white;
+  padding: 12px 24px;
+  border: none;
+  border-radius: var(--admin-radius-md);
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 15px;
+  transition: all var(--admin-transition);
+  align-self: flex-start;
+}
+
+.admin-btn-add-question:hover {
+  background: var(--admin-primary-light);
+  transform: translateY(-2px);
+  box-shadow: var(--admin-shadow-md);
+}
+
+.admin-no-questions {
+  text-align: center;
+  color: var(--admin-text-light);
+  padding: 40px;
+  font-size: 16px;
+}
+
+/* حالات التحميل والفارغة */
+.admin-loading-spinner {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 100px 20px;
+  background: white;
+  border-radius: var(--admin-radius-lg);
+  box-shadow: var(--admin-shadow-md);
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-loading-spinner > div {
+  font-size: 60px;
+  margin-bottom: 25px;
+  color: var(--admin-primary);
+}
+
+.admin-loading-spinner p {
+  color: var(--admin-text-secondary);
+  font-size: 18px;
+}
+
+.admin-empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 120px 20px;
+  background: white;
+  border-radius: var(--admin-radius-lg);
+  box-shadow: var(--admin-shadow-md);
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-empty-icon {
+  font-size: 120px;
+  margin-bottom: 25px;
+  opacity: 0.5;
+  color: var(--admin-primary-light);
+}
+
+.admin-empty-state p {
+  font-size: 20px;
+  color: var(--admin-text-secondary);
+  font-weight: 600;
+}
+
+/* Scrollbar styling */
+.admin-modal-content::-webkit-scrollbar,
+.admin-questions-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.admin-modal-content::-webkit-scrollbar-track,
+.admin-questions-list::-webkit-scrollbar-track {
+  background: var(--admin-bg-light);
+  border-radius: 10px;
+}
+
+.admin-modal-content::-webkit-scrollbar-thumb,
+.admin-questions-list::-webkit-scrollbar-thumb {
+  background: var(--admin-primary);
+  border-radius: 10px;
+}
+
+.admin-modal-content::-webkit-scrollbar-thumb:hover,
+.admin-questions-list::-webkit-scrollbar-thumb:hover {
+  background: var(--admin-primary-light);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .admin-dashboard {
+    padding: 80px 15px 30px;
+  }
+
+  .admin-header {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 20px;
+  }
+
+  .admin-header .header-content h1 {
+    font-size: 24px;
+  }
+
+  .admin-btn-add-book {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .admin-books-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .admin-book-cover {
+    height: 150px;
+  }
+
+  .admin-book-icon {
+    font-size: 70px;
+  }
+
+  .admin-book-info h3 {
+    font-size: 20px;
+  }
+
+  .admin-actions-quiz {
+    flex-direction: column;
+  }
+
+  .admin-btn-quiz {
+    width: 100%;
+  }
+
+  .admin-quiz-actions {
+    flex-wrap: wrap;
+  }
+
+  .admin-quiz-badge {
+    width: 100%;
+    text-align: center;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .admin-books-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1025px) and (max-width: 1400px) {
+  .admin-books-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1401px) {
+  .admin-books-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
