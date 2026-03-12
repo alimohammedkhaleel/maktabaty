@@ -38,17 +38,29 @@ git push -u origin main
 
 ---
 
-### الخطوة 2: قاعدة البيانات (Clever Cloud)
+### الخطوة 2: قاعدة البيانات (Railway - مجاني)
 
-1. اذهب إلى: https://www.clever-cloud.com
+**الخيار 1: Railway (موصى به)**
+
+1. اذهب إلى: https://railway.app
 2. سجل دخول بـ GitHub
-3. Create > Add-on > MySQL
-4. اختر الخطة المجانية (DEV)
-5. احفظ بيانات الاتصال:
-   - Host
-   - User
-   - Password
-   - Database Name
+3. انقر **New Project**
+4. اختر **Provision MySQL**
+5. بعد الإنشاء، اذهب إلى تبويب **Variables**
+6. احفظ بيانات الاتصال:
+   - `MYSQL_HOST` (Host)
+   - `MYSQL_USER` (User)
+   - `MYSQL_PASSWORD` (Password)
+   - `MYSQL_DATABASE` (Database Name)
+   - `MYSQL_PORT` (Port - عادة 3306)
+
+**الخيار 2: Aiven (بديل)**
+
+1. اذهب إلى: https://aiven.io
+2. سجل دخول بـ GitHub
+3. Create Service > MySQL
+4. اختر الخطة المجانية (Free tier)
+5. احفظ بيانات الاتصال من صفحة Overview
 
 ---
 
@@ -69,10 +81,10 @@ git push -u origin main
    ```
    NODE_ENV=production
    PORT=10000
-   DB_HOST=[من Clever Cloud]
-   DB_USER=[من Clever Cloud]
-   DB_PASSWORD=[من Clever Cloud]
-   DB_NAME=[من Clever Cloud]
+   DB_HOST=[من Railway/Aiven]
+   DB_USER=[من Railway/Aiven]
+   DB_PASSWORD=[من Railway/Aiven]
+   DB_NAME=[من Railway/Aiven]
    DB_PORT=3306
    JWT_SECRET=[نص عشوائي طويل]
    JWT_EXPIRE=7d
