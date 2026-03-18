@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { quizService } from '../../services/authService';
+import api from '../../services/apppi'; // ✅ التعديل هنا
 import useAuthStore from '../../store/authStore';
 import './Quiz.css';
 
@@ -11,22 +11,22 @@ const GlobalLeaderboard = () => {
 
   const { user, updateUser } = useAuthStore();
   const celebrationShown = useRef(false);
-  const initialLoadDone = useRef(false); // للتأكد من تحميل البيانات أولاً
+  const initialLoadDone = useRef(false);
 
   // جلب البيانات - يتم تشغيله مرة واحدة فقط
   useEffect(() => {
     const fetchLeaderboard = async () => {
       try {
         setLoading(true);
-        const res = await quizService.getGlobalLeaderboard();
+        const res = await api.authRequest('/quizzes/leaderboard/global', { method: 'GET' }); // ✅ استخدم api
         
-        if (res.data.success) {
-          setBoard(res.data.leaderboard || []);
+        if (res.success) { // ✅ تعديل هنا
+          setBoard(res.leaderboard || []);
         } else {
-          setError(res.data.message || 'فشل تحميل الأوائل');
+          setError(res.message || 'فشل تحميل الأوائل');
         }
       } catch (err) {
-        setError(err.response?.data?.message || 'فشل تحميل الأوائل');
+        setError(err.message || 'فشل تحميل الأوائل'); // ✅ تعديل هنا
       } finally {
         setLoading(false);
         initialLoadDone.current = true;
@@ -74,7 +74,7 @@ const GlobalLeaderboard = () => {
       // إذا لم يكن المستخدم في القائمة، نحدث فقط إذا كان مختلفاً
       updateUser({ ...user, globalRank: null });
     }
-  }, [board, user, updateUser]); // نفس التبعيات لكن مع شرط المقارنة
+  }, [board, user, updateUser]);
 
   // تنسيق النقاط
   const formatPoints = (points) => {

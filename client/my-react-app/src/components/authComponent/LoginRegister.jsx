@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 import { faFacebook, faLinkedin } from '@fortawesome/free-brands-svg-icons';
-import { authService } from '../../services/authService';
+import api from '../../services/apppi'; // ✅ التعديل هنا
 import useAuthStore from '../../store/authStore';
 import './LoginRegister.css';
 
@@ -35,14 +35,14 @@ const LoginRegister = () => {
     setError('');
 
     try {
-      const response = await authService.login(
+      const response = await api.login( // ✅ استخدم api.login
         formData.signIn.email,
         formData.signIn.password
       );
 
-      if (response.data.success || response.data.token) {
-        const userData = response.data.user || response.data;
-        const token = response.data.token;
+      if (response.success || response.token) { // ✅ تعديل هنا
+        const userData = response.user || response;
+        const token = response.token;
         setAuth(userData, token);
         
         setTimeout(() => {
@@ -54,7 +54,7 @@ const LoginRegister = () => {
         }, 300);
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'خطأ في تسجيل الدخول');
+      setError(err.message || 'خطأ في تسجيل الدخول'); // ✅ تعديل هنا
     } finally {
       setIsLoading(false);
     }
@@ -74,11 +74,11 @@ const LoginRegister = () => {
         return;
       }
 
-      const response = await authService.register(username, email, password, confirmPassword);
+      const response = await api.register(username, email, password, confirmPassword); // ✅ استخدم api.register
 
-      if (response.data.success || response.data.token) {
-        const userData = response.data.user || response.data;
-        const token = response.data.token;
+      if (response.success || response.token) { // ✅ تعديل هنا
+        const userData = response.user || response;
+        const token = response.token;
         setAuth(userData, token);
         
         setTimeout(() => {
@@ -90,7 +90,7 @@ const LoginRegister = () => {
         }, 300);
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'خطأ في التسجيل');
+      setError(err.message || 'خطأ في التسجيل'); // ✅ تعديل هنا
     } finally {
       setIsLoading(false);
     }
@@ -98,7 +98,7 @@ const LoginRegister = () => {
 
   const toggleMode = () => {
     setIsSignUp(!isSignUp);
-    setError(''); // مسح الأخطاء عند التبديل
+    setError('');
   };
 
   return (

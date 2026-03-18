@@ -7,12 +7,13 @@ import {
   faStar,
   faFilePdf 
 } from '@fortawesome/free-solid-svg-icons';
-import { useNavigate } from 'react-router-dom'; // استيراد useNavigate
+import { useNavigate } from 'react-router-dom';
 import { useIntersectionObserver } from '../../hooks/useIntersectionObserver';
+import config from '../../config'; // ✅ استيراد config
 
 const BookCard = ({ book, isFavorite, onToggleFavorite }) => {
   const [isInView, setIsInView] = useState(false);
-  const navigate = useNavigate(); // استخدام useNavigate
+  const navigate = useNavigate();
 
   const ref = useIntersectionObserver(
     () => setIsInView(true),
@@ -27,16 +28,17 @@ const BookCard = ({ book, isFavorite, onToggleFavorite }) => {
   // دالة للذهاب إلى صفحة المحادثة
   const goToChatPage = (e) => {
     e.stopPropagation();
-    // استخدم navigate مباشرة بدون onSelectBook
     navigate(`/chat/${book.id}`, { 
-      state: { book } // نمرر بيانات الكتاب
+      state: { book }
     });
   };
 
   const handlePdfView = (e, pdfUrl) => {
     e.stopPropagation();
     if (pdfUrl) {
-      window.open(`http://localhost:3001${pdfUrl}`, '_blank');
+      // ✅ استخدام config بدلاً من localhost
+      const baseUrl = config.apiUrl.replace('/api', '');
+      window.open(`${baseUrl}${pdfUrl}`, '_blank');
     }
   };
 
@@ -67,7 +69,7 @@ const BookCard = ({ book, isFavorite, onToggleFavorite }) => {
             <div className="overlay">
               <motion.button
                 className="btn-read"
-                onClick={goToChatPage} // استخدام الدالة الجديدة
+                onClick={goToChatPage}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
               >

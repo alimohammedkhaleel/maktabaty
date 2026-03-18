@@ -21,7 +21,15 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 import { booksService, quizService } from '../../services/authService';
 import useBooksStore from '../../store/booksStore';
+import config from '../../config'; // ✅ 1. أضف هذا السطر
 import './AdminDashboard.css';
+
+// ✅ 2. دالة مساعدة للحصول على رابط الملفات
+const getFileUrl = (filePath) => {
+  if (!filePath) return '#';
+  const baseUrl = config.apiUrl.replace('/api', '');
+  return `${baseUrl}${filePath}`;
+};
 
 const AdminDashboard = () => {
   const { books, setBooks, isLoading, setLoading, error, setError } = useBooksStore();
@@ -734,7 +742,7 @@ const AdminDashboard = () => {
 
                 {book.file_url && (
                   <a 
-                    href={`http://localhost:3001${book.file_url}`} 
+                    href={getFileUrl(book.file_url)} // ✅ 3. استخدم الدالة هنا
                     target="_blank" 
                     rel="noreferrer" 
                     className="admin-pdf-link"

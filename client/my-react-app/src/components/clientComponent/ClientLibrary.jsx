@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch, faSpinner, faBook } from '@fortawesome/free-solid-svg-icons';
-import { booksService } from '../../services/authService';
+import api from '../../services/apppi'; // ✅ التعديل هنا
 import useBooksStore from '../../store/booksStore';
 import BookCard from './BookCard';
 import './ClientLibrary.css';
@@ -27,9 +27,9 @@ const ClientLibrary = () => {
   const fetchBooks = async () => {
     try {
       setLoading(true);
-      const response = await booksService.getAllBooks();
-      if (response.data.success) {
-        setBooks(response.data.books);
+      const response = await api.authRequest('/books', { method: 'GET' }); // ✅ استخدم api
+      if (response.success) { // ✅ تعديل هنا
+        setBooks(response.books);
       }
     } catch (error) {
       console.error('خطأ في تحميل الكتب');
@@ -41,10 +41,15 @@ const ClientLibrary = () => {
   const handleToggleFavorite = (book) => {
     if (favorites.includes(book.id)) {
       removeFavorite(book.id);
-      booksService.removeFromFavorites(book.id).catch(() => addFavorite(book.id));
+      api.authRequest(`/favorites/${book.id}`, { method: 'DELETE' }) // ✅ استخدم api
+        .catch(() => addFavorite(book.id));
     } else {
       addFavorite(book.id);
-      booksService.addToFavorites(book.id).catch(() => removeFavorite(book.id));
+      api.authRequest('/favorites', { // ✅ استخدم api
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ bookId: book.id })
+      }).catch(() => removeFavorite(book.id));
     }
   };
 
@@ -77,7 +82,7 @@ const ClientLibrary = () => {
       >
         <div className="header-content">
           <h1>📚 مكتبتنا الرقمية تحت اشراف ا/رضا بكري</h1>
-          <p>  استكشف مجموعة واسعة من الكتب تحت اشراف ا/رضا بكري</p>
+          <p>استكشف مجموعة واسعة من الكتب تحت اشراف ا/رضا بكري</p>
         </div>
       </motion.div>
 

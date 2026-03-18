@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { quizService } from '../../services/authService';
+import api from '../../services/apppi'; // ✅ التعديل هنا
 import useAuthStore from '../../store/authStore';
 import './Quiz.css';
 
@@ -16,9 +16,10 @@ const QuizList = () => {
     const fetch = async () => {
       try {
         setLoading(true);
-        const res = await quizService.listQuizzes();
-        if (res.data.success) {
-          setQuizzes(res.data.quizzes);
+        const res = await api.authRequest('/quizzes', { method: 'GET' }); // ✅ استخدم api
+        
+        if (res.success) { // ✅ تعديل هنا
+          setQuizzes(res.quizzes);
         }
       } catch (err) {
         setError('حدث خطأ أثناء جلب الاختبارات');
@@ -36,7 +37,7 @@ const QuizList = () => {
   const handleDelete = async (quizId) => {
     if (!window.confirm('هل أنت متأكد من حذف هذا الاختبار؟')) return;
     try {
-      await quizService.deleteQuiz(quizId);
+      await api.authRequest(`/quizzes/${quizId}`, { method: 'DELETE' }); // ✅ استخدم api
       setQuizzes(quizzes.filter(q => q.id !== quizId));
     } catch (err) {
       console.error('delete quiz error', err);

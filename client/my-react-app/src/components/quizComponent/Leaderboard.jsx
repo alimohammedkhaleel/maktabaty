@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { quizService } from '../../services/authService';
+import api from '../../services/apppi'; // ✅ التعديل هنا
 import './Quiz.css';
 
 const Leaderboard = () => {
@@ -13,9 +13,10 @@ const Leaderboard = () => {
     const fetch = async () => {
       try {
         setLoading(true);
-        const res = await quizService.getLeaderboard(id);
-        if (res.data.success) {
-          setLeaderboard(res.data.leaderboard);
+        const res = await api.authRequest(`/quizzes/${id}/leaderboard`, { method: 'GET' }); // ✅ استخدم api
+        
+        if (res.success) { // ✅ تعديل هنا
+          setLeaderboard(res.leaderboard);
         }
       } catch (err) {
         setError('فشل تحميل الترتيب');

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faLock, faUser, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import { authService } from '../../services/authService';
+import api from '../../services/apppi'; // ✅ استيراد api الجديد
 import useAuthStore from '../../store/authStore';
 import './Auth.css';
 
@@ -33,17 +33,19 @@ const Auth = ({ onSuccess }) => {
     setError('');
 
     try {
-      const response = await authService.login(
+      const response = await api.login(
         formData.signIn.email,
         formData.signIn.password
       );
 
-      if (response.data.success) {
-        setAuth(response.data.user, response.data.token);
+      if (response.success) {
+        setAuth(response.user, response.token);
         onSuccess?.();
+      } else {
+        setError(response.message || 'خطأ في تسجيل الدخول');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'خطأ في تسجيل الدخول');
+      setError(err.message || 'خطأ في تسجيل الدخول');
     } finally {
       setIsLoading(false);
     }
@@ -56,14 +58,16 @@ const Auth = ({ onSuccess }) => {
 
     try {
       const { username, email, password, confirmPassword } = formData.signUp;
-      const response = await authService.register(username, email, password, confirmPassword);
+      const response = await api.register(username, email, password, confirmPassword);
 
-      if (response.data.success) {
-        setAuth(response.data.user, response.data.token);
+      if (response.success) {
+        setAuth(response.user, response.token);
         onSuccess?.();
+      } else {
+        setError(response.message || 'خطأ في التسجيل');
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'خطأ في التسجيل');
+      setError(err.message || 'خطأ في التسجيل');
     } finally {
       setIsLoading(false);
     }

@@ -20,7 +20,8 @@ import {
   faTag,
   faList
 } from '@fortawesome/free-solid-svg-icons';
-import { booksService, quizService } from '../../services/authService';
+import api from '../../services/apppi'; // ✅ التعديل هنا
+import config from '../../config'; // ✅ التعديل هنا
 import './ChatPage.css';
 
 const ChatPage = () => {
@@ -52,7 +53,7 @@ const ChatPage = () => {
   const [bookStats, setBookStats] = useState(null);
   const [bookQuiz, setBookQuiz] = useState(null);
 
-  // Animation variants
+  // Animation variants (كما هي)
   const chatContainerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -272,9 +273,9 @@ const ChatPage = () => {
   const fetchBookDetails = async () => {
     try {
       setIsLoadingBook(true);
-      const response = await booksService.getBookById(bookId);
-      if (response.data.success) {
-        setBook(response.data.book);
+      const response = await api.authRequest(`/books/${bookId}`, { method: 'GET' });
+      if (response.success) {
+        setBook(response.book);
       }
     } catch (err) {
       console.error('Error fetching book:', err);
@@ -286,9 +287,9 @@ const ChatPage = () => {
 
   const fetchBookStats = async () => {
     try {
-      const response = await booksService.getBookStats(bookId);
-      if (response.data.success) {
-        setBookStats(response.data.stats);
+      const response = await api.authRequest(`/books/${bookId}/stats`, { method: 'GET' });
+      if (response.success) {
+        setBookStats(response.stats);
       }
     } catch (err) {
       console.error('Error fetching book stats:', err);
@@ -297,9 +298,9 @@ const ChatPage = () => {
 
   const fetchBookQuiz = async () => {
     try {
-      const response = await quizService.getQuizByBookId(bookId);
-      if (response.data.success) {
-        setBookQuiz(response.data.quiz);
+      const response = await api.authRequest(`/quizzes/book/${bookId}`, { method: 'GET' });
+      if (response.success) {
+        setBookQuiz(response.quiz);
       }
     } catch (err) {
       console.error('Error fetching book quiz:', err);
@@ -513,7 +514,7 @@ const ChatPage = () => {
 
         {book?.file_url && (
           <motion.a 
-            href={`http://localhost:3001${book.file_url}`}
+            href={`${config.apiUrl.replace(/\/api$/, '')}${book.file_url}`}
             target="_blank"
             rel="noreferrer"
             className="chat-pdf-btn"
@@ -528,7 +529,7 @@ const ChatPage = () => {
         )}
       </motion.div>
 
-      {/* Messages Container */}
+      {/* باقي الكود (كما هو) */}
       <div className="chat-messages-container" ref={chatContainerRef}>
         {/* Questions Section */}
         <AnimatePresence mode="wait">

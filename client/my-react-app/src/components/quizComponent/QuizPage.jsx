@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { quizService } from '../../services/authService';
+import api from '../../services/apppi'; // ✅ التعديل هنا
 import './Quiz.css';
 
 const QuizPage = () => {
@@ -25,12 +25,13 @@ const QuizPage = () => {
     const fetch = async () => {
       try {
         setLoading(true);
-        const res = await quizService.getQuiz(id);
-        if (res.data.success) {
-          setQuiz(res.data.quiz);
+        const res = await api.authRequest(`/quizzes/${id}`, { method: 'GET' }); // ✅ استخدم api
+        
+        if (res.success) { // ✅ تعديل هنا
+          setQuiz(res.quiz);
           // initialize answers for all questions with -1 (not answered)
           const emptyAnswers = {};
-          res.data.quiz.questions.forEach(q => {
+          res.quiz.questions.forEach(q => {
             emptyAnswers[q.id] = -1;  // -1 يعني لم يتم الاختيار
           });
           setAnswers(emptyAnswers);
@@ -62,16 +63,21 @@ const QuizPage = () => {
     
     try {
       setLoading(true);
-      const res = await quizService.submitQuiz(id, answerArray);
+      const res = await api.authRequest(`/quizzes/${id}/submit`, { // ✅ استخدم api
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ answers: answerArray })
+      });
+      
       console.log('[QUIZPAGE] submit response', res);
-      if (res.data.success) {
-        setResult(res.data); // contains score, rank, bonus, totalQuestions
+      if (res.success) { // ✅ تعديل هنا
+        setResult(res); // contains score, rank, bonus, totalQuestions
       } else {
-        setError(res.data.message || 'فشل إرسال الأجوبة');
+        setError(res.message || 'فشل إرسال الأجوبة');
       }
     } catch (err) {
       console.error('[QUIZPAGE] submit error', err);
-      setError(err.response?.data?.message || err.message || 'فشل إرسال الأجوبة');
+      setError(err.message || 'فشل إرسال الأجوبة');
     } finally {
       setLoading(false);
     }
