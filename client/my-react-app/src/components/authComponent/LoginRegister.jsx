@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEnvelope, faLock, faUser } from '@fortawesome/free-solid-svg-icons';
 import { faFacebook, faLinkedin } from '@fortawesome/free-brands-svg-icons';
-import api from '../../services/apppi'; // ✅ التعديل هنا
+import api from '../../services/api'; // ✅ التصحيح: api مش apppi
 import useAuthStore from '../../store/authStore';
 import './LoginRegister.css';
 
@@ -35,12 +35,12 @@ const LoginRegister = () => {
     setError('');
 
     try {
-      const response = await api.login( // ✅ استخدم api.login
+      const response = await api.login(
         formData.signIn.email,
         formData.signIn.password
       );
 
-      if (response.success || response.token) { // ✅ تعديل هنا
+      if (response.success || response.token) {
         const userData = response.user || response;
         const token = response.token;
         setAuth(userData, token);
@@ -52,9 +52,11 @@ const LoginRegister = () => {
             navigate('/', { replace: true });
           }
         }, 300);
+      } else {
+        setError(response.message || 'فشل تسجيل الدخول');
       }
     } catch (err) {
-      setError(err.message || 'خطأ في تسجيل الدخول'); // ✅ تعديل هنا
+      setError(err.message || 'خطأ في تسجيل الدخول');
     } finally {
       setIsLoading(false);
     }
@@ -74,9 +76,9 @@ const LoginRegister = () => {
         return;
       }
 
-      const response = await api.register(username, email, password, confirmPassword); // ✅ استخدم api.register
+      const response = await api.register(username, email, password, confirmPassword);
 
-      if (response.success || response.token) { // ✅ تعديل هنا
+      if (response.success || response.token) {
         const userData = response.user || response;
         const token = response.token;
         setAuth(userData, token);
@@ -88,9 +90,11 @@ const LoginRegister = () => {
             navigate('/', { replace: true });
           }
         }, 300);
+      } else {
+        setError(response.message || 'فشل إنشاء الحساب');
       }
     } catch (err) {
-      setError(err.message || 'خطأ في التسجيل'); // ✅ تعديل هنا
+      setError(err.message || 'خطأ في التسجيل');
     } finally {
       setIsLoading(false);
     }
