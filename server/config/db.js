@@ -1,27 +1,35 @@
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
-const pool = mysql.createPool({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  port: process.env.DB_PORT,
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0,
-  charset: 'utf8mb4'
-});
+// إنشاء pool للاتصالات
+const pool = mysql.createPool(process.env.MYSQL_URL);
 
 // اختبار الاتصال
-pool.getConnection()
-  .then(connection => {
-    console.log('✅ Database Connected Successfully');
+const testConnection = async () => {
+  try {
+    const connection = await pool.getConnection();
+    console.log('✅ Database pool connected successfully');
     connection.release();
-  })
-  .catch(err => {
-    console.error('❌ Database Connection Error:', err);
-    process.exit(1);
-  });
+    return true;
+  } catch (error) {
+    console.error('❌ Database pool connection failed:', error.message);
+    return false;
+  }
+};
 
-module.exports = pool;
+// دالة مساعدة للاستعلامات
+const query = async (sql, params) => {
+  try {
+    const [results] = await pool.execute(sql, params);
+    return results;
+  } catch (error) {
+    console.error('Query error:', error);
+    throw error;
+  }
+};
+
+module.exports = {
+  pool,
+  query,
+  testConnection
+};

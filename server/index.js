@@ -1,7 +1,8 @@
-
 require('dotenv').config();
 console.log('✅ Dotenv loaded');
 console.log('GEMINI_API_KEY exists:', !!process.env.GEMINI_API_KEY);
+console.log('MYSQL_URL exists:', !!process.env.MYSQL_URL); // ✅ أضف هذا السطر
+
 const express = require('express');
 const cors = require('cors');
 const initializeDatabase = require('./config/initDB');
@@ -51,6 +52,26 @@ app.get('/api/health', (req, res) => {
   });
 });
 
+// ✅ أضف مسار لاختبار اتصال قاعدة البيانات
+app.get('/api/test-db', async (req, res) => {
+  try {
+    const connection = await pool.getConnection();
+    const [result] = await connection.execute('SELECT 1 as test');
+    connection.release();
+    res.json({
+      success: true,
+      message: '✅ Database connected successfully',
+      data: result
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: '❌ Database connection failed',
+      error: error.message
+    });
+  }
+});
+
 // معالج الأخطاء
 app.use((err, req, res, next) => {
   console.error('Error:', err);
@@ -64,6 +85,12 @@ app.use((err, req, res, next) => {
 // بدء السيرفر
 const startServer = async () => {
   try {
+    // ✅ تحقق من وجود MYSQL_URL
+    if (!process.env.MYSQL_URL) {
+      throw new Error('MYSQL_URL is not defined in environment variables');
+    }
+    console.log('✅ MYSQL_URL is defined');
+
     // تهيئة قاعدة البيانات
     console.log('🔄 Initializing database...');
     await initializeDatabase();
@@ -76,8 +103,9 @@ const startServer = async () => {
     // بدء السيرفر
     app.listen(PORT, () => {
       console.log(`🚀 Server started on port ${PORT}`);
-      console.log(`📍 Environment: ${process.env.ENVIRONMENT}`);
+      console.log(`📍 Environment: ${process.env.ENVIRONMENT || 'development'}`);
       console.log(`🌍 API Base URL: http://localhost:${PORT}/api`);
+      console.log(`🔗 Test DB: http://localhost:${PORT}/api/test-db`);
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error);
