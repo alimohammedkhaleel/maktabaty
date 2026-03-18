@@ -70,18 +70,7 @@ app.get('/api/test-db', async (req, res) => {
   }
 });
 
-// ========== Serve React Frontend ==========
-// خدمة الملفات الثابتة من مجلد build (عدل المسار حسب مكان مشروعك)
-const reactBuildPath = path.join(__dirname, '../client/my-react-app/dist');
-app.use(express.static(reactBuildPath));
-
-// أي مسار مش موجود في الـ API يروح لـ index.html
-app.get('*', (req, res) => {
-  // لو المسار يبدأ بـ /api، نتجاهل (الـ API routes هتشتغل قبل كده)
-  if (!req.path.startsWith('/api')) {
-    res.sendFile(path.join(reactBuildPath, 'index.html'));
-  }
-});
+// ❌ تم إزالة كود خدمة React Frontend لأنه أصبح على Vercel
 
 // معالج الأخطاء
 app.use((err, req, res, next) => {
@@ -117,7 +106,7 @@ const startServer = async () => {
       console.log(`📍 Environment: ${process.env.ENVIRONMENT || 'development'}`);
       console.log(`🌍 API Base URL: http://localhost:${PORT}/api`);
       console.log(`🔗 Test DB: http://localhost:${PORT}/api/test-db`);
-      console.log(`📱 React Frontend: http://localhost:${PORT}`);
+      // console.log(`📱 React Frontend: http://localhost:${PORT}`); // تم إزالة هذا السطر أيضًا
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error);
