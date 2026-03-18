@@ -1,19 +1,19 @@
 require('dotenv').config();
 console.log('✅ Dotenv loaded');
 console.log('GEMINI_API_KEY exists:', !!process.env.GEMINI_API_KEY);
-console.log('MYSQL_URL exists:', !!process.env.MYSQL_URL); // ✅ أضف هذا السطر
+console.log('MYSQL_URL exists:', !!process.env.MYSQL_URL);
 
 const express = require('express');
 const cors = require('cors');
 const initializeDatabase = require('./config/initDB');
 const pool = require('./config/db');
+const path = require('path');
 
 // استيراد الروتس
 const authRoutes = require('./routes/authRoutes');
 const booksRoutes = require('./routes/booksRoutes');
 const aiRoutes = require('./routes/aiRoutes');
 const quizRoutes = require('./routes/quizRoutes');
-const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -38,9 +38,7 @@ app.use((req, res, next) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/books', booksRoutes);
 app.use('/api/ai', aiRoutes);
-// serve uploaded files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-// quiz routes
 app.use('/api/quizzes', quizRoutes);
 
 // مسار الاختبار
@@ -52,7 +50,7 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// ✅ أضف مسار لاختبار اتصال قاعدة البيانات
+// مسار لاختبار اتصال قاعدة البيانات
 app.get('/api/test-db', async (req, res) => {
   try {
     const connection = await pool.getConnection();
@@ -72,6 +70,19 @@ app.get('/api/test-db', async (req, res) => {
   }
 });
 
+// ========== Serve React Frontend ==========
+// خدمة الملفات الثابتة من مجلد build (عدل المسار حسب مكان مشروعك)
+const reactBuildPath = path.join(__dirname, '../client/my-react-app/dist');
+app.use(express.static(reactBuildPath));
+
+// أي مسار مش موجود في الـ API يروح لـ index.html
+app.get('*', (req, res) => {
+  // لو المسار يبدأ بـ /api، نتجاهل (الـ API routes هتشتغل قبل كده)
+  if (!req.path.startsWith('/api')) {
+    res.sendFile(path.join(reactBuildPath, 'index.html'));
+  }
+});
+
 // معالج الأخطاء
 app.use((err, req, res, next) => {
   console.error('Error:', err);
@@ -85,7 +96,7 @@ app.use((err, req, res, next) => {
 // بدء السيرفر
 const startServer = async () => {
   try {
-    // ✅ تحقق من وجود MYSQL_URL
+    // تحقق من وجود MYSQL_URL
     if (!process.env.MYSQL_URL) {
       throw new Error('MYSQL_URL is not defined in environment variables');
     }
@@ -106,6 +117,7 @@ const startServer = async () => {
       console.log(`📍 Environment: ${process.env.ENVIRONMENT || 'development'}`);
       console.log(`🌍 API Base URL: http://localhost:${PORT}/api`);
       console.log(`🔗 Test DB: http://localhost:${PORT}/api/test-db`);
+      console.log(`📱 React Frontend: http://localhost:${PORT}`);
     });
   } catch (error) {
     console.error('❌ Failed to start server:', error);
