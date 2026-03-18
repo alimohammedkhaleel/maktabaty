@@ -2,6 +2,8 @@ const mysql = require('mysql2/promise');
 require('dotenv').config();
 
 // 🔍 تشخيص المشكلة
+console.log('🔥 MYSQL_URL value:', process.env.MYSQL_URL ? 'EXISTS' : 'UNDEFINED');
+console.log('🔥 MYSQL_URL raw:', JSON.stringify(process.env.MYSQL_URL));
 console.log('🔍 Raw MYSQL_URL value:', process.env.MYSQL_URL);
 console.log('🔍 MYSQL_URL type:', typeof process.env.MYSQL_URL);
 console.log('🔍 MYSQL_URL length:', process.env.MYSQL_URL?.length);
