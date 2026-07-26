@@ -57,7 +57,7 @@ const Home = () => {
     return () => clearTimeout(disappearTimer);
   }, []);
 
-  // نقاط القوس
+  // نقاط القوس - من الشمال (اليسار) لليمين
   const getArcPoints = () => {
     const points = [];
     const arcStartX = 20;
@@ -70,7 +70,9 @@ const Home = () => {
       const y = 300 - arcHeight * Math.sin(t * Math.PI);
       points.push({ x, y });
     }
-    return points;
+    
+    // عكس الترتيب عشان الكتب تبدأ من اليسار (الشمال)
+    return points.reverse();
   };
 
   const arcPoints = getArcPoints();
