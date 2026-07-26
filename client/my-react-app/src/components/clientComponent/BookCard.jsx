@@ -60,7 +60,15 @@ const BookCard = ({ book, isFavorite, onToggleFavorite }) => {
       {isInView && (
         <>
           <div className="book-cover">
-            <div className="placeholder">
+            {book.cover_url ? (
+              <img 
+                src={book.cover_url.startsWith('http') ? book.cover_url : `http://localhost:3001${book.cover_url}`} 
+                alt={book.title} 
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                onError={(e) => { e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+              />
+            ) : null}
+            <div className="placeholder" style={{ display: book.cover_url ? 'none' : 'flex', width: '100%', height: '100%', alignItems: 'center', justifyContent: 'center' }}>
               <FontAwesomeIcon icon={faBook} />
             </div>
 

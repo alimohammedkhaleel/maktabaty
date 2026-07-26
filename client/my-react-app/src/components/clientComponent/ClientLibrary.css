@@ -99,8 +99,6 @@
   transition: all var(--transition);
   display: flex;
   flex-direction: column;
-  height: 100%;
-  width: 300px;
 
 }
 

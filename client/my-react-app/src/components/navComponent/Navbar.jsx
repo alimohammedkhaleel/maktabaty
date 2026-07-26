@@ -91,9 +91,13 @@ const Navbar = () => {
                         navigate('/');
                     }}
                     ref={logoRef}
+                    style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}
                 >
-                    <span className="logo-text">مكتبة</span>
-                    <span className="logo-accent">الأخلاق</span>
+                    <img src="/logo.png" alt="مكتبة الأخلاق" style={{ height: '40px', width: 'auto' }} onError={(e) => { e.target.style.display = 'none'; }} />
+                    <div>
+                        <span className="logo-text">مكتبة</span>
+                        <span className="logo-accent">الأخلاق</span>
+                    </div>
                 </a>
 
                 {/* روابط التنقل */}
