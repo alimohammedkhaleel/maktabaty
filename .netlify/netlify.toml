@@ -1,0 +1,135 @@
+functionsDirectory = "E:\\revesion of html , css , java script\\مكتبتي\\netlify\\functions"
+functionsDirectoryOrigin = "config"
+redirectsOrigin = "config"
+plugins = []
+headers = []
+
+[build]
+publish = "E:\\revesion of html , css , java script\\مكتبتي\\client\\my-react-app\\dist"
+publishOrigin = "config"
+commandOrigin = "config"
+command = "npm --prefix client/my-react-app run build"
+functions = "E:\\revesion of html , css , java script\\مكتبتي\\netlify\\functions"
+
+[build.environment]
+NODE_VERSION = "18"
+JWT_SECRET = "test123"
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]
+
+[database]
+
+[database.migrations]
+path = "E:\\revesion of html , css , java script\\مكتبتي\\netlify\\database\\migrations"
+
+[functions]
+
+[functions."*"]
+external_node_modules = ["pg-native"]
+node_bundler = "esbuild"
+
+[[redirects]]
+from = "/api/*"
+to = "/.netlify/functions/:splat"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/auth"
+to = "/.netlify/functions/auth"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/auth/*"
+to = "/.netlify/functions/auth"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/books"
+to = "/.netlify/functions/books"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/books/*"
+to = "/.netlify/functions/books"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/quizzes"
+to = "/.netlify/functions/quiz"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/quizzes/*"
+to = "/.netlify/functions/quiz"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]
+
+[[redirects]]
+from = "/*"
+to = "/index.html"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]

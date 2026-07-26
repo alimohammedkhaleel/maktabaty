@@ -1,7 +1,6 @@
 node_modules/
 .env
+uploads/
 *.log
-uploads/*.pdf
-uploads/*.jpg
-uploads/*.png
-!uploads/.gitkeep
+.DS_Store
+dist/

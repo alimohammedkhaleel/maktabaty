@@ -1,0 +1,44 @@
+redirectsOrigin = "config"
+plugins = []
+functionsDirectory = "E:\\revesion of html , css , java script\\مكتبتي\\client\\netlify\\functions"
+functionsDirectoryOrigin = "config"
+headers = []
+
+[functions]
+
+[functions."*"]
+
+[build]
+publish = "E:\\revesion of html , css , java script\\مكتبتي\\client\\client\\my-react-app\\dist"
+publishOrigin = "config"
+commandOrigin = "config"
+base = "E:\\revesion of html , css , java script\\مكتبتي\\client"
+command = "npm --prefix client/my-react-app run build"
+functions = "E:\\revesion of html , css , java script\\مكتبتي\\client\\netlify\\functions"
+
+[build.environment]
+NODE_VERSION = "18"
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]
+
+[[redirects]]
+from = "/api/*"
+to = "/.netlify/functions/:splat"
+status = 200.0
+force = false
+
+[redirects.query]
+
+[redirects.conditions]
+
+[redirects.headers]

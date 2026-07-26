@@ -1,31 +1,25 @@
 const pool = require('../config/db');
 
-// محاكاة نموذج AI بسيط - يمكن استبداله بـ TensorFlow.js أو OpenAI API
+// ─── Simple AI Class ──────────────────────────────────────────────────────────
 class SimpleAI {
   constructor() {
     this.keywords = {
-      author: ['who is the author', 'who wrote', 'author of'],
-      summary: ['what is this book about', 'summarize', 'summary', 'overview'],
+      author:     ['who is the author', 'who wrote', 'author of'],
+      summary:    ['what is this book about', 'summarize', 'summary', 'overview'],
       characters: ['characters', 'protagonist', 'main character'],
-      plot: ['plot', 'story', 'what happens'],
-      chapter: ['chapter', 'page', 'pages'],
-      theme: ['theme', 'themes', 'message']
+      plot:       ['plot', 'story', 'what happens'],
+      chapter:    ['chapter', 'page', 'pages'],
+      theme:      ['theme', 'themes', 'message']
     };
   }
 
   generateResponse(question, bookData) {
     const lowerQuestion = question.toLowerCase();
-    
-    // التحقق من الكلمات الرئيسية
     for (const [key, words] of Object.entries(this.keywords)) {
       for (const word of words) {
-        if (lowerQuestion.includes(word)) {
-          return this.getAnswer(key, bookData);
-        }
+        if (lowerQuestion.includes(word)) return this.getAnswer(key, bookData);
       }
     }
-
-    // إجابة عامة
     return {
       answer: `هذا كتاب بعنوان "${bookData.title}" بواسطة ${bookData.author}. ${bookData.description || 'لم تتوفر معلومات إضافية.'}`,
       confidence: 0.6
@@ -34,148 +28,93 @@ class SimpleAI {
 
   getAnswer(type, bookData) {
     const answers = {
-      author: {
-        answer: `الكتاب "${bookData.title}" تم تأليفه بواسطة ${bookData.author}.`,
-        confidence: 0.95
-      },
-      summary: {
-        answer: `ملخص الكتاب: ${bookData.description || 'لم تتوفر ملخصات تفصيلية.'}`,
-        confidence: 0.85
-      },
-      chapter: {
-        answer: `كتاب "${bookData.title}" يحتوي على ${bookData.pages || 'عدد غير محدد'} صفحة.`,
-        confidence: 0.9
-      },
-      theme: {
-        answer: `المواضيع الرئيسية في "${bookData.title}": ${bookData.category || 'متنوعة'}`,
-        confidence: 0.75
-      }
+      author:  { answer: `الكتاب "${bookData.title}" تم تأليفه بواسطة ${bookData.author}.`, confidence: 0.95 },
+      summary: { answer: `ملخص الكتاب: ${bookData.description || 'لم تتوفر ملخصات تفصيلية.'}`, confidence: 0.85 },
+      chapter: { answer: `كتاب "${bookData.title}" يحتوي على ${bookData.pages || 'عدد غير محدد'} صفحة.`, confidence: 0.9 },
+      theme:   { answer: `المواضيع الرئيسية في "${bookData.title}": ${bookData.category || 'متنوعة'}`, confidence: 0.75 }
     };
-
-    return answers[type] || {
-      answer: 'لم أتمكن من فهم سؤالك تماماً. يرجى إعادة الصياغة.',
-      confidence: 0.5
-    };
+    return answers[type] || { answer: 'لم أتمكن من فهم سؤالك تماماً. يرجى إعادة الصياغة.', confidence: 0.5 };
   }
 }
 
 const ai = new SimpleAI();
 
-// طرح سؤال على الـ AI
+// ─── Ask Question ─────────────────────────────────────────────────────────────
 exports.askQuestion = async (req, res) => {
   try {
     const { question, book_id } = req.body;
 
     if (!question || !book_id) {
-      return res.status(400).json({
-        success: false,
-        message: 'Question and book ID are required'
-      });
+      return res.status(400).json({ success: false, message: 'Question and book ID are required' });
     }
 
-    const connection = await pool.getConnection();
-
-    // الحصول على بيانات الكتاب
-    const [books] = await connection.query(
-      'SELECT * FROM books WHERE id = ?',
+    const { rows: books } = await pool.query(
+      'SELECT * FROM books WHERE id = $1',
       [book_id]
     );
 
     if (books.length === 0) {
-      connection.release();
-      return res.status(404).json({
-        success: false,
-        message: 'Book not found'
-      });
+      return res.status(404).json({ success: false, message: 'Book not found' });
     }
 
     const bookData = books[0];
-
-    // توليد الإجابة باستخدام الـ AI
     const aiResponse = ai.generateResponse(question, bookData);
 
-    // حفظ السؤال والإجابة في قاعدة البيانات
-    await connection.query(
+    await pool.query(
       `INSERT INTO qa_history (user_id, book_id, question, answer, confidence)
-       VALUES (?, ?, ?, ?, ?)`,
+       VALUES ($1, $2, $3, $4, $5)`,
       [req.user.id, book_id, question, aiResponse.answer, aiResponse.confidence]
     );
-
-    connection.release();
 
     return res.status(200).json({
       success: true,
       question,
       answer: aiResponse.answer,
       confidence: aiResponse.confidence,
-      book: {
-        id: bookData.id,
-        title: bookData.title,
-        author: bookData.author
-      }
+      book: { id: bookData.id, title: bookData.title, author: bookData.author }
     });
   } catch (error) {
     console.error('Ask question error:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server error'
-    });
+    return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
 
-// الحصول على السجل التاريخي للأسئلة
+// ─── Get QA History ───────────────────────────────────────────────────────────
 exports.getQAHistory = async (req, res) => {
   try {
-    const connection = await pool.getConnection();
-
-    const [history] = await connection.query(
-      `SELECT q.*, b.title as book_title FROM qa_history q
+    const { rows: history } = await pool.query(
+      `SELECT q.*, b.title AS book_title
+       FROM qa_history q
        LEFT JOIN books b ON q.book_id = b.id
-       WHERE q.user_id = ?
+       WHERE q.user_id = $1
        ORDER BY q.created_at DESC
        LIMIT 50`,
       [req.user.id]
     );
 
-    connection.release();
-
-    return res.status(200).json({
-      success: true,
-      count: history.length,
-      history
-    });
+    return res.status(200).json({ success: true, count: history.length, history });
   } catch (error) {
     console.error('Get QA history error:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server error'
-    });
+    return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
 
-// حل أسئلة تلقائية للكتاب
+// ─── Generate Auto Questions ──────────────────────────────────────────────────
 exports.generateAutoQuestions = async (req, res) => {
   try {
     const { book_id } = req.params;
 
-    const connection = await pool.getConnection();
-
-    const [books] = await connection.query(
-      'SELECT * FROM books WHERE id = ?',
+    const { rows: books } = await pool.query(
+      'SELECT * FROM books WHERE id = $1',
       [book_id]
     );
 
     if (books.length === 0) {
-      connection.release();
-      return res.status(404).json({
-        success: false,
-        message: 'Book not found'
-      });
+      return res.status(404).json({ success: false, message: 'Book not found' });
     }
 
     const bookData = books[0];
 
-    // أسئلة تلقائية قياسية
     const autoQuestions = [
       'من هو مؤلف هذا الكتاب؟',
       'ما هي فئة هذا الكتاب؟',
@@ -184,77 +123,52 @@ exports.generateAutoQuestions = async (req, res) => {
       'متى تم نشر هذا الكتاب؟'
     ];
 
-    // توليد الإجابات
     const answers = autoQuestions.map(q => {
       const response = ai.generateResponse(q, bookData);
-      return {
-        question: q,
-        answer: response.answer,
-        confidence: response.confidence
-      };
+      return { question: q, answer: response.answer, confidence: response.confidence };
     });
 
-    // حفظ الأسئلة والإجابات
     for (const item of answers) {
-      await connection.query(
+      await pool.query(
         `INSERT INTO qa_history (user_id, book_id, question, answer, confidence)
-         VALUES (?, ?, ?, ?, ?)`,
+         VALUES ($1, $2, $3, $4, $5)`,
         [req.user.id, book_id, item.question, item.answer, item.confidence]
       );
     }
 
-    connection.release();
-
     return res.status(200).json({
       success: true,
-      book: {
-        id: bookData.id,
-        title: bookData.title
-      },
+      book: { id: bookData.id, title: bookData.title },
       autoQuestions: answers
     });
   } catch (error) {
     console.error('Generate auto questions error:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server error'
-    });
+    return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
 
-// البحث في محتوى الكتب
+// ─── Search In Books ──────────────────────────────────────────────────────────
 exports.searchInBooks = async (req, res) => {
   try {
     const { query } = req.query;
 
     if (!query) {
-      return res.status(400).json({
-        success: false,
-        message: 'Search query is required'
-      });
+      return res.status(400).json({ success: false, message: 'Search query is required' });
     }
 
-    const connection = await pool.getConnection();
-
-    const [results] = await connection.query(
-      `SELECT id, title, author, description FROM books
-       WHERE MATCH(title, author, description) AGAINST(? IN BOOLEAN MODE)
+    const { rows: results } = await pool.query(
+      `SELECT id, title, author, description
+       FROM books
+       WHERE title ILIKE $1
+          OR author ILIKE $1
+          OR description ILIKE $1
        LIMIT 10`,
-      [query]
+      [`%${query}%`]
     );
 
-    connection.release();
-
-    return res.status(200).json({
-      success: true,
-      count: results.length,
-      results
-    });
+    return res.status(200).json({ success: true, count: results.length, results });
   } catch (error) {
     console.error('Search in books error:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server error'
-    });
+    return res.status(500).json({ success: false, message: 'Server error' });
   }
 };

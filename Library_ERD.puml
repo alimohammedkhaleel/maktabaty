@@ -1,0 +1,127 @@
+@startuml Library_ERD
+hide circle
+skinparam linetype ortho
+skinparam entity {
+    BackgroundColor #E8F4FD
+    BorderColor #2980B9
+    FontSize 13
+    FontStyle bold
+}
+skinparam arrow {
+    Color #2C3E50
+    FontSize 11
+}
+skinparam title {
+    FontSize 16
+    FontStyle bold
+}
+
+title Library Management System — ERD
+
+' ==================== ENTITIES ====================
+
+entity "USERS" as Users {
+  * userId : INT <<PK>>
+  --
+  name : VARCHAR(100)
+  email : VARCHAR(150)
+  password : VARCHAR(255)
+  membership : ENUM('basic','premium')
+  createdAt : TIMESTAMP
+}
+
+entity "BOOKS" as Books {
+  * bookId : INT <<PK>>
+  --
+  title : VARCHAR(200)
+  author : VARCHAR(100)
+  isbn : VARCHAR(20)
+  publishedYear : INT
+  availableCopies : INT
+  totalCopies : INT
+  categoryId : INT <<FK>>
+}
+
+entity "CATEGORIES" as Categories {
+  * categoryId : INT <<PK>>
+  --
+  categoryName : VARCHAR(100)
+  description : TEXT
+}
+
+entity "LOANS" as Loans {
+  * loanId : INT <<PK>>
+  --
+  userId : INT <<FK>>
+  bookId : INT <<FK>>
+  borrowDate : DATE
+  dueDate : DATE
+  returnDate : DATE
+  status : ENUM('active','returned','overdue')
+}
+
+entity "FINES" as Fines {
+  * fineId : INT <<PK>>
+  --
+  loanId : INT <<FK>>
+  userId : INT <<FK>>
+  amount : DECIMAL(10,2)
+  reason : VARCHAR(200)
+  paidAt : TIMESTAMP
+  status : ENUM('pending','paid')
+}
+
+entity "REVIEWS" as Reviews {
+  * reviewId : INT <<PK>>
+  --
+  userId : INT <<FK>>
+  bookId : INT <<FK>>
+  rating : INT
+  comment : TEXT
+  reviewDate : TIMESTAMP
+}
+
+entity "QUIZ_RESULTS" as QuizResults {
+  * quizId : INT <<PK>>
+  --
+  userId : INT <<FK>>
+  bookId : INT <<FK>>
+  score : INT
+  totalQuestions : INT
+  completedAt : TIMESTAMP
+}
+
+entity "NOTIFICATIONS" as Notifications {
+  * notifId : INT <<PK>>
+  --
+  userId : INT <<FK>>
+  message : TEXT
+  type : ENUM('due_date','fine','new_book','quiz')
+  isRead : BOOLEAN
+  createdAt : TIMESTAMP
+}
+
+entity "ADMINS" as Admins {
+  * adminId : INT <<PK>>
+  --
+  name : VARCHAR(100)
+  email : VARCHAR(150)
+  password : VARCHAR(255)
+  role : VARCHAR(50)
+}
+
+' ==================== RELATIONSHIPS ====================
+
+Users         ||--o{ Loans         : "borrows"
+Books         ||--o{ Loans         : "is borrowed in"
+Loans         ||--o{ Fines         : "generates"
+Users         ||--o{ Fines         : "is charged"
+Users         ||--o{ Reviews       : "writes"
+Books         ||--o{ Reviews       : "receives"
+Categories    ||--o{ Books         : "classifies"
+Users         ||--o{ QuizResults   : "takes"
+Books         ||--o{ QuizResults   : "has quiz for"
+Users         ||--o{ Notifications : "receives"
+Admins        ||--o{ Books         : "manages"
+
+@enduml

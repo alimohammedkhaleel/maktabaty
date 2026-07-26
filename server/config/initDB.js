@@ -1,148 +1,164 @@
-const mysql = require('mysql2/promise');
+const { Pool } = require('pg');
+const fs = require('fs');
+const path = require('path');
 require('dotenv').config();
 
 async function initializeDatabase() {
+  const client = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }
+  });
+
   try {
-    // الاتصال بدون تحديد database
-    const connection = await mysql.createConnection({
-      host: process.env.DB_HOST,
-      user: process.env.DB_USER,
-      password: process.env.DB_PASSWORD,
-      port: process.env.DB_PORT,
-      charset: 'utf8mb4'
-    });
+    const conn = await client.connect();
 
-    // إنشاء Database
-    await connection.query(`
-      CREATE DATABASE IF NOT EXISTS ${process.env.DB_NAME} 
-      CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+    // Auto-update trigger function
+    await conn.query(`
+      CREATE OR REPLACE FUNCTION update_updated_at_column()
+      RETURNS TRIGGER AS $$
+      BEGIN
+          NEW.updated_at = NOW();
+          RETURN NEW;
+      END;
+      $$ LANGUAGE plpgsql;
     `);
 
-    await connection.query(`USE ${process.env.DB_NAME}`);
-
-    // جدول المستخدمين
-    await connection.query(`
+    // users table
+    await conn.query(`
       CREATE TABLE IF NOT EXISTS users (
-        id INT PRIMARY KEY AUTO_INCREMENT,
-        username VARCHAR(100) UNIQUE NOT NULL,
-        email VARCHAR(255) UNIQUE NOT NULL,
-        password VARCHAR(255) NOT NULL,
-        role ENUM('user', 'admin') DEFAULT 'user',
-        avatar_url VARCHAR(255),
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        INDEX (email),
-        INDEX (username),
-        INDEX (role)
-      ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+        id          SERIAL PRIMARY KEY,
+        username    VARCHAR(100) UNIQUE NOT NULL,
+        email       VARCHAR(255) UNIQUE NOT NULL,
+        password    VARCHAR(255) NOT NULL,
+        role        VARCHAR(10) DEFAULT 'user' CHECK (role IN ('user', 'admin')),
+        avatar_url  VARCHAR(255),
+        created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    await conn.query(`CREATE INDEX IF NOT EXISTS idx_users_email    ON users(email)`);
+    await conn.query(`CREATE INDEX IF NOT EXISTS idx_users_username ON users(username)`);
+    await conn.query(`CREATE INDEX IF NOT EXISTS idx_users_role     ON users(role)`);
+    await conn.query(`
+      DROP TRIGGER IF EXISTS trg_users_updated_at ON users;
+    `);
+    await conn.query(`
+      CREATE TRIGGER trg_users_updated_at
+        BEFORE UPDATE ON users
+        FOR EACH ROW EXECUTE FUNCTION update_updated_at_column()
     `);
 
-    // جدول الكتب
-    await connection.query(`
+    // books table
+    await conn.query(`
       CREATE TABLE IF NOT EXISTS books (
-        id INT PRIMARY KEY AUTO_INCREMENT,
-        title VARCHAR(255) NOT NULL,
-        author VARCHAR(255) NOT NULL,
-        description TEXT,
-        file_url VARCHAR(255),
-        file_name VARCHAR(255),
-        category VARCHAR(100),
-        published_year INT,
-        pages INT,
-        cover_url VARCHAR(255),
-        created_by INT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY (created_by) REFERENCES users(id),
-        INDEX (title),
-        INDEX (author),
-        INDEX (category),
-        FULLTEXT INDEX (title, author, description)
-      ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+        id              SERIAL PRIMARY KEY,
+        title           VARCHAR(255) NOT NULL,
+        author          VARCHAR(255) NOT NULL,
+        description     TEXT,
+        file_url        VARCHAR(255),
+        file_name       VARCHAR(255),
+        category        VARCHAR(100),
+        published_year  INT,
+        pages           INT,
+        cover_url       VARCHAR(255),
+        created_by      INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    await conn.query(`CREATE INDEX IF NOT EXISTS idx_books_title      ON books(title)`);
+    await conn.query(`CREATE INDEX IF NOT EXISTS idx_books_author     ON books(author)`);
+    await conn.query(`CREATE INDEX IF NOT EXISTS idx_books_category   ON books(category)`);
+    await conn.query(`CREATE INDEX IF NOT EXISTS idx_books_created_by ON books(created_by)`);
+    await conn.query(`DROP TRIGGER IF EXISTS trg_books_updated_at ON books`);
+    await conn.query(`
+      CREATE TRIGGER trg_books_updated_at
+        BEFORE UPDATE ON books
+        FOR EACH ROW EXECUTE FUNCTION update_updated_at_column()
     `);
 
-    // جدول الأسئلة والإجابات (للـ AI)
-    await connection.query(`
+    // qa_history table
+    await conn.query(`
       CREATE TABLE IF NOT EXISTS qa_history (
-        id INT PRIMARY KEY AUTO_INCREMENT,
-        user_id INT NOT NULL,
-        book_id INT,
-        question TEXT NOT NULL,
-        answer TEXT,
-        confidence DECIMAL(3,2),
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users(id),
-        FOREIGN KEY (book_id) REFERENCES books(id),
-        INDEX (user_id),
-        INDEX (book_id)
-      ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+        id          SERIAL PRIMARY KEY,
+        user_id     INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        book_id     INT REFERENCES books(id) ON DELETE SET NULL,
+        question    TEXT NOT NULL,
+        answer      TEXT,
+        confidence  DECIMAL(3,2),
+        created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
     `);
+    await conn.query(`CREATE INDEX IF NOT EXISTS idx_qa_user_id ON qa_history(user_id)`);
+    await conn.query(`CREATE INDEX IF NOT EXISTS idx_qa_book_id ON qa_history(book_id)`);
 
-    // جدول المفضلة
-    await connection.query(`
+    // favorites table
+    await conn.query(`
       CREATE TABLE IF NOT EXISTS favorites (
-        id INT PRIMARY KEY AUTO_INCREMENT,
-        user_id INT NOT NULL,
-        book_id INT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE KEY unique_favorite (user_id, book_id),
-        FOREIGN KEY (user_id) REFERENCES users(id),
-        FOREIGN KEY (book_id) REFERENCES books(id),
-        INDEX (user_id)
-      ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+        id          SERIAL PRIMARY KEY,
+        user_id     INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        book_id     INT NOT NULL REFERENCES books(id) ON DELETE CASCADE,
+        created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE (user_id, book_id)
+      )
     `);
+    await conn.query(`CREATE INDEX IF NOT EXISTS idx_favorites_user_id ON favorites(user_id)`);
+    await conn.query(`CREATE INDEX IF NOT EXISTS idx_favorites_book_id ON favorites(book_id)`);
 
-    // جدول الكويزات
-    await connection.query(`
+    // quizzes table
+    await conn.query(`
       CREATE TABLE IF NOT EXISTS quizzes (
-        id INT PRIMARY KEY AUTO_INCREMENT,
-        book_id INT NOT NULL,
-        title VARCHAR(255) NOT NULL,
-        created_by INT NOT NULL,
-        published TINYINT DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        FOREIGN KEY (book_id) REFERENCES books(id),
-        FOREIGN KEY (created_by) REFERENCES users(id),
-        INDEX (book_id),
-        INDEX (created_by),
-        INDEX (published)
-      ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+        id          SERIAL PRIMARY KEY,
+        book_id     INT NOT NULL REFERENCES books(id) ON DELETE CASCADE,
+        title       VARCHAR(255) NOT NULL DEFAULT '',
+        created_by  INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        published   SMALLINT DEFAULT 0,
+        created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+    await conn.query(`CREATE INDEX IF NOT EXISTS idx_quizzes_book_id    ON quizzes(book_id)`);
+    await conn.query(`CREATE INDEX IF NOT EXISTS idx_quizzes_created_by ON quizzes(created_by)`);
+    await conn.query(`CREATE INDEX IF NOT EXISTS idx_quizzes_published  ON quizzes(published)`);
+    await conn.query(`DROP TRIGGER IF EXISTS trg_quizzes_updated_at ON quizzes`);
+    await conn.query(`
+      CREATE TRIGGER trg_quizzes_updated_at
+        BEFORE UPDATE ON quizzes
+        FOR EACH ROW EXECUTE FUNCTION update_updated_at_column()
     `);
 
-    // جدول أسئلة الكويزات
-    await connection.query(`
+    // quiz_questions table
+    await conn.query(`
       CREATE TABLE IF NOT EXISTS quiz_questions (
-        id INT PRIMARY KEY AUTO_INCREMENT,
-        quiz_id INT NOT NULL,
-        question TEXT NOT NULL,
-        options_json VARCHAR(1024) NOT NULL,
-        answer_index INT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE,
-        INDEX (quiz_id)
-      ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+        id              SERIAL PRIMARY KEY,
+        quiz_id         INT NOT NULL REFERENCES quizzes(id) ON DELETE CASCADE,
+        question        TEXT NOT NULL,
+        options_json    VARCHAR(1024) NOT NULL,
+        answer_index    INT NOT NULL,
+        created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
     `);
+    await conn.query(`CREATE INDEX IF NOT EXISTS idx_quiz_questions_quiz_id ON quiz_questions(quiz_id)`);
 
-    // جدول نتائج الكويزات
-    await connection.query(`
+    // quiz_results table
+    await conn.query(`
       CREATE TABLE IF NOT EXISTS quiz_results (
-        id INT PRIMARY KEY AUTO_INCREMENT,
-        quiz_id INT NOT NULL,
-        user_id INT NOT NULL,
-        score INT NOT NULL DEFAULT 0,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (quiz_id) REFERENCES quizzes(id) ON DELETE CASCADE,
-        FOREIGN KEY (user_id) REFERENCES users(id),
-        INDEX (quiz_id),
-        INDEX (user_id)
-      ) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci
+        id          SERIAL PRIMARY KEY,
+        quiz_id     INT NOT NULL REFERENCES quizzes(id) ON DELETE CASCADE,
+        user_id     INT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        score       INT NOT NULL DEFAULT 0,
+        created_at  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
     `);
+    await conn.query(`CREATE INDEX IF NOT EXISTS idx_quiz_results_quiz_id ON quiz_results(quiz_id)`);
+    await conn.query(`CREATE INDEX IF NOT EXISTS idx_quiz_results_user_id ON quiz_results(user_id)`);
 
-    console.log('✅ Database initialized successfully');
-    await connection.end();
+    console.log('✅ PostgreSQL Database initialized successfully (7 tables ready)');
+    conn.release();
+    await client.end();
   } catch (error) {
-    console.error('❌ Database initialization error:', error);
+    console.error('❌ Database initialization error:', error.message);
+    await client.end();
     throw error;
   }
 }

@@ -2,136 +2,84 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const pool = require('../config/db');
 
-// تسجيل مستخدم جديد
+// ─── Register ────────────────────────────────────────────────────────────────
 exports.register = async (req, res) => {
   try {
     const { username, email, password, confirmPassword } = req.body;
 
-    // التحقق من صحة البيانات
     if (!username || !email || !password || !confirmPassword) {
-      return res.status(400).json({
-        success: false,
-        message: 'All fields are required'
-      });
+      return res.status(400).json({ success: false, message: 'All fields are required' });
     }
-
     if (password !== confirmPassword) {
-      return res.status(400).json({
-        success: false,
-        message: 'Passwords do not match'
-      });
+      return res.status(400).json({ success: false, message: 'Passwords do not match' });
     }
-
     if (password.length < 6) {
-      return res.status(400).json({
-        success: false,
-        message: 'Password must be at least 6 characters'
-      });
+      return res.status(400).json({ success: false, message: 'Password must be at least 6 characters' });
     }
 
-    const connection = await pool.getConnection();
-
-    // التحقق من وجود المستخدم
-    const [existingUser] = await connection.query(
-      'SELECT * FROM users WHERE email = ? OR username = ?',
+    // Check duplicates
+    const { rows: existing } = await pool.query(
+      'SELECT id FROM users WHERE email = $1 OR username = $2',
       [email, username]
     );
-
-    if (existingUser.length > 0) {
-      connection.release();
-      return res.status(409).json({
-        success: false,
-        message: 'Email or username already exists'
-      });
+    if (existing.length > 0) {
+      return res.status(409).json({ success: false, message: 'Email or username already exists' });
     }
 
-    // تشفير كلمة المرور
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // إدراج المستخدم الجديد
-    const [result] = await connection.query(
-      'INSERT INTO users (username, email, password) VALUES (?, ?, ?)',
+    const { rows: [inserted] } = await pool.query(
+      'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id',
       [username, email, hashedPassword]
     );
 
     const token = jwt.sign(
-      { id: result.insertId, email, username, role: 'user' },
+      { id: inserted.id, email, username, role: 'user' },
       process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRE }
+      { expiresIn: process.env.JWT_EXPIRE || '7d' }
     );
-
-    connection.release();
 
     return res.status(201).json({
       success: true,
       message: 'Registration successful',
       token,
-      user: {
-        id: result.insertId,
-        username,
-        email,
-        role: 'user'
-      }
+      user: { id: inserted.id, username, email, role: 'user' }
     });
   } catch (error) {
     console.error('Register error:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server error during registration'
-    });
+    return res.status(500).json({ success: false, message: 'Server error during registration' });
   }
 };
 
-// تسجيل الدخول
+// ─── Login ────────────────────────────────────────────────────────────────────
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: 'Email and password are required'
-      });
+      return res.status(400).json({ success: false, message: 'Email and password are required' });
     }
 
-    const connection = await pool.getConnection();
-
-    const [users] = await connection.query(
-      'SELECT * FROM users WHERE email = ?',
+    const { rows: users } = await pool.query(
+      'SELECT * FROM users WHERE email = $1',
       [email]
     );
 
     if (users.length === 0) {
-      connection.release();
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid email or password'
-      });
+      return res.status(401).json({ success: false, message: 'Invalid email or password' });
     }
 
     const user = users[0];
     const isPasswordValid = await bcrypt.compare(password, user.password);
-
     if (!isPasswordValid) {
-      connection.release();
-      return res.status(401).json({
-        success: false,
-        message: 'Invalid email or password'
-      });
+      return res.status(401).json({ success: false, message: 'Invalid email or password' });
     }
 
     const token = jwt.sign(
-      {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        role: user.role
-      },
+      { id: user.id, email: user.email, username: user.username, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: process.env.JWT_EXPIRE }
+      { expiresIn: process.env.JWT_EXPIRE || '7d' }
     );
-
-    connection.release();
 
     return res.status(200).json({
       success: true,
@@ -147,53 +95,42 @@ exports.login = async (req, res) => {
     });
   } catch (error) {
     console.error('Login error:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server error during login'
-    });
+    return res.status(500).json({ success: false, message: 'Server error during login' });
   }
 };
 
-// الحصول على بيانات المستخدم
+// ─── Get Profile ──────────────────────────────────────────────────────────────
 exports.getProfile = async (req, res) => {
   try {
-    const connection = await pool.getConnection();
-
-    const [users] = await connection.query(
-      'SELECT id, username, email, role, avatar_url, created_at FROM users WHERE id = ?',
+    const { rows: users } = await pool.query(
+      'SELECT id, username, email, role, avatar_url, created_at FROM users WHERE id = $1',
       [req.user.id]
     );
 
     if (users.length === 0) {
-      connection.release();
-      return res.status(404).json({
-        success: false,
-        message: 'User not found'
-      });
+      return res.status(404).json({ success: false, message: 'User not found' });
     }
 
     const user = users[0];
 
-    // حساب إجمالي النقاط للمستخدم من جميع الكويزات
-    const [totals] = await connection.query(
-      'SELECT SUM(score) AS totalPoints FROM quiz_results WHERE user_id = ?',
+    // Total points from all quizzes
+    const { rows: totals } = await pool.query(
+      'SELECT COALESCE(SUM(score), 0) AS "totalPoints" FROM quiz_results WHERE user_id = $1',
       [req.user.id]
     );
-    const totalPoints = totals[0].totalPoints || 0;
+    const totalPoints = parseInt(totals[0].totalPoints) || 0;
 
-    // حساب الترتيب العالمي بناءً على مجموع النقاط
-    const [higher] = await connection.query(
+    // Global rank (users with higher total score)
+    const { rows: [higher] } = await pool.query(
       `SELECT COUNT(*) AS cnt FROM (
          SELECT user_id, SUM(score) AS total
          FROM quiz_results
          GROUP BY user_id
-         HAVING total > ?
+         HAVING SUM(score) > $1
        ) AS t`,
       [totalPoints]
     );
-    const globalRank = higher[0].cnt + 1;
-
-    connection.release();
+    const globalRank = parseInt(higher.cnt) + 1;
 
     return res.status(200).json({
       success: true,
@@ -201,41 +138,32 @@ exports.getProfile = async (req, res) => {
     });
   } catch (error) {
     console.error('Get profile error:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server error'
-    });
+    return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
 
-// تحديث الملف الشخصي
+// ─── Update Profile ───────────────────────────────────────────────────────────
 exports.updateProfile = async (req, res) => {
   try {
     const { username, avatar_url } = req.body;
-    const connection = await pool.getConnection();
 
-    await connection.query(
-      'UPDATE users SET username = ?, avatar_url = ? WHERE id = ?',
-      [username || req.user.username, avatar_url, req.user.id]
+    await pool.query(
+      'UPDATE users SET username = $1, avatar_url = $2 WHERE id = $3',
+      [username || req.user.username, avatar_url || null, req.user.id]
     );
 
-    const [updatedUser] = await connection.query(
-      'SELECT id, username, email, role, avatar_url FROM users WHERE id = ?',
+    const { rows: [updatedUser] } = await pool.query(
+      'SELECT id, username, email, role, avatar_url FROM users WHERE id = $1',
       [req.user.id]
     );
-
-    connection.release();
 
     return res.status(200).json({
       success: true,
       message: 'Profile updated successfully',
-      user: updatedUser[0]
+      user: updatedUser
     });
   } catch (error) {
     console.error('Update profile error:', error);
-    return res.status(500).json({
-      success: false,
-      message: 'Server error'
-    });
+    return res.status(500).json({ success: false, message: 'Server error' });
   }
 };
