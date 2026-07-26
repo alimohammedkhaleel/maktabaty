@@ -1,8 +1,8 @@
 {
-  "buildCommand": "cd client/my-react-app && npm install && npm run build",
-  "outputDirectory": "client/my-react-app/dist",
-  "installCommand": "echo 'skipping root install'",
-  "framework": null,
+  "buildCommand": "npm install && npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install",
+  "framework": "vite",
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
   ]
