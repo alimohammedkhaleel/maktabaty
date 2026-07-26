@@ -57,22 +57,23 @@ const Home = () => {
     return () => clearTimeout(disappearTimer);
   }, []);
 
-  // نقاط القوس - من الشمال (اليسار) لليمين
+  // نقاط القوس - من اليسار (left) لليمين (right)
   const getArcPoints = () => {
     const points = [];
-    const arcStartX = 20;
-    const arcEndX = windowWidth - 20;
+    const arcStartX = 20; // بداية الشاشة من اليسار
+    const arcEndX = windowWidth - 20; // نهاية الشاشة من اليمين
     const arcWidth = arcEndX - arcStartX;
     const arcHeight = 450;
 
+    // Loop من اليسار لليمين
     for (let x = arcStartX; x <= arcEndX; x += 35) {
       const t = (x - arcStartX) / arcWidth;
       const y = 300 - arcHeight * Math.sin(t * Math.PI);
       points.push({ x, y });
     }
     
-    // عكس الترتيب عشان الكتب تبدأ من اليسار (الشمال)
-    return points.reverse();
+    // النقاط مرتبة من left → right بالفعل
+    return points;
   };
 
   const arcPoints = getArcPoints();
@@ -193,48 +194,53 @@ const Home = () => {
           {/* المرحلة 3: الحركة النصف دائرية */}
           {showArcAnimation && (
             <>
-              {books.map((book, index) => (
-                <motion.div
-                  key={`arc-${book.id}`}
-                  className="arc-book arc-animation"
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                  }}
-                >
+              {books.map((book, index) => {
+                // بداية الكتاب من أول نقطة في القوس (اليسار)
+                const initialPoint = arcPoints[0];
+                
+                return (
                   <motion.div
-                    className="book-card"
+                    key={`arc-${book.id}`}
+                    className="arc-book arc-animation"
                     style={{
-                      backgroundColor: book.bgColor,
-                      color: book.textColor,
-                    }}
-                    initial={{
-                      x: startX,
-                      y: 300,
-                      opacity: 0,
-                      scale: 0,
-                    }}
-                    animate={{
-                      x: arcPoints.map(p => p.x),
-                      y: arcPoints.map(p => p.y),
-                      opacity: [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.9],
-                      scale: [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.9],
-                    }}
-                    transition={{
-                      duration: 7,
-                      delay: index * 1.43,
-                      repeat: Infinity,
-                      repeatType: "loop",
-                      ease: "linear",
-                      times: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+                      position: 'absolute',
+                      top: 0,
+                      left: 0,
                     }}
                   >
-                    <span className="card-emoji">{book.emoji}</span>
-                    <span className="card-title">{book.title}</span>
+                    <motion.div
+                      className="book-card"
+                      style={{
+                        backgroundColor: book.bgColor,
+                        color: book.textColor,
+                      }}
+                      initial={{
+                        x: initialPoint.x,
+                        y: initialPoint.y,
+                        opacity: 0,
+                        scale: 0,
+                      }}
+                      animate={{
+                        x: arcPoints.map(p => p.x),
+                        y: arcPoints.map(p => p.y),
+                        opacity: [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.9],
+                        scale: [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.9],
+                      }}
+                      transition={{
+                        duration: 7,
+                        delay: index * 1.43,
+                        repeat: Infinity,
+                        repeatType: "loop",
+                        ease: "linear",
+                        times: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+                      }}
+                    >
+                      <span className="card-emoji">{book.emoji}</span>
+                      <span className="card-title">{book.title}</span>
+                    </motion.div>
                   </motion.div>
-                </motion.div>
-              ))}
+                );
+              })}
             </>
           )}
         </div>
