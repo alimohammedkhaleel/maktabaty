@@ -1,4 +1,4 @@
-/* Home.css */
+/* Home.css - Simple & Fast */
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
 
 :root {
@@ -8,8 +8,6 @@
     --light-color: #f5f7f3;
     --dark-color: #1a2c21;
     --gray-color: #7a8c7d;
-    --white-color: #ffffff;
-    --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
 }
 
 * {
@@ -22,300 +20,137 @@ body {
     font-family: 'Cairo', sans-serif;
     overflow-x: hidden;
     background-color: var(--light-color);
-    direction: rtl; /* تفعيل RTL للعربي */
+    direction: rtl;
 }
 
 .home-container {
     width: 100%;
     overflow-x: hidden;
-    direction: rtl; /* تأكيد RTL */
+    direction: rtl;
 }
 
 /* Hero Section */
 .hero-section {
-    min-height: 2vh;
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 70%, var(--light-color) 100%);
+    min-height: 70vh;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
     display: flex;
     align-items: center;
     justify-content: center;
     text-align: center;
-    position: relative;
-    overflow: hidden;
-    padding: 0 20px;
-}
-
-.hero-section::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(212, 175, 55, 0.1) 0%, transparent 70%);
-    animation: rotate 30s linear infinite;
-}
-
-.hero-section::after {
-    content: '📚';
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    font-size: 15rem;
-    opacity: 0.05;
-    transform: rotate(-15deg);
-    color: var(--accent-color);
-}
-
-@keyframes rotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+    padding: 40px 20px;
 }
 
 .hero-content {
-    position: relative;
-    z-index: 10000;
-    max-width: 900px;
-    padding: 20px;
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-   
-   
-    
+    max-width: 800px;
+    color: white;
 }
 
 .hero-content h1 {
-    font-size: 2.5rem;
+    font-size: 4rem;
     font-weight: 900;
     margin-bottom: 20px;
-    color: white;
-    line-height: 1;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
 }
 
+.hero-content p {
+    font-size: 1.5rem;
+    margin-bottom: 30px;
+    opacity: 0.95;
+}
 
 .cta-button {
     background: var(--accent-color);
     color: var(--dark-color);
     border: none;
-    padding: 10px 20px;
-    font-size: 1rem;
+    padding: 18px 45px;
+    font-size: 1.3rem;
     font-weight: bold;
     border-radius: 50px;
     cursor: pointer;
     transition: all 0.3s ease;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     font-family: 'Cairo', sans-serif;
-    letter-spacing: 1px;
 }
 
 .cta-button:hover {
-    transform: scale(1.05);
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
     background: white;
     color: var(--primary-color);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
 }
 
-/* Journey Section - رحلة القارئ */
-.journey-section {
-    padding: 80px 20px;
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 70%, var(--light-color) 100%);
-    position: relative;
-    overflow: hidden;
-    min-height: 600px;
-}
-
-.journey-section h2 {
-    text-align: center;
-    font-size: 3rem;
-    color: white;
-    margin-bottom: 60px;
-    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
-    position: relative;
-    z-index: 10;
-}
-
-.journey-container {
-    max-width: 1400px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 40px;
-    position: relative;
-    z-index: 10;
-    padding: 20px;
-}
-
-.journey-card {
-    background: white;
-    padding: 40px 30px;
-    border-radius: 25px;
-    text-align: center;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-    position: relative;
-    cursor: pointer;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    border: 3px solid var(--accent-color);
-    overflow: visible;
-}
-
-.journey-card:hover {
-    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
-    border-color: white;
-}
-
-.step-number {
-    position: absolute;
-    top: -20px;
-    right: -20px;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
+/* Stats Section */
+.stats-section {
     display: flex;
-    align-items: center;
     justify-content: center;
-    font-size: 2rem;
-    font-weight: bold;
-    color: white;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    border: 4px solid white;
-    z-index: 5;
+    align-items: center;
+    gap: 40px;
+    padding: 60px 20px;
+    background: white;
+    flex-wrap: wrap;
 }
 
-.journey-icon {
-    font-size: 5rem;
-    margin-bottom: 20px;
-    filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.2));
+.stat-card {
+    text-align: center;
+    padding: 30px 50px;
+    border-right: 3px solid var(--accent-color);
 }
 
-.journey-card h3 {
-    font-size: 1.8rem;
+.stat-card:first-child {
+    border-right: none;
+}
+
+.stat-card h3 {
+    font-size: 3rem;
     color: var(--primary-color);
-    margin-bottom: 15px;
-    font-weight: 700;
+    font-weight: 900;
+    margin-bottom: 10px;
 }
 
-.journey-card p {
-    color: var(--gray-color);
+.stat-card p {
     font-size: 1.1rem;
-    line-height: 1.6;
-}
-
-.connector-line {
-    position: absolute;
-    top: 50%;
-    left: 100%;
-    width: 40px;
-    height: 4px;
-    background: linear-gradient(90deg, var(--accent-color), transparent);
-    transform: translateY(-50%);
-    transform-origin: left;
-    z-index: 1;
-}
-
-/* Floating Particles */
-.journey-particles {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    z-index: 1;
-}
-
-.particle {
-    position: absolute;
-    font-size: 2rem;
-    opacity: 0.3;
-    pointer-events: none;
+    color: var(--gray-color);
 }
 
 /* Features Section */
 .features-section {
     padding: 80px 20px;
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    background: var(--light-color);
     text-align: center;
-    position: relative;
-    overflow: hidden;
-}
-
-.features-section::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-    animation: rotate 40s linear infinite;
 }
 
 .features-section h2 {
     font-size: 3rem;
-    color: white;
-    margin-bottom: 3rem;
-    position: relative;
-    display: inline-block;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-    z-index: 1;
-}
-
-.features-section h2::after {
-    content: '';
-    position: absolute;
-    bottom: -10px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100px;
-    height: 3px;
-    background: var(--accent-color);
-    border-radius: 2px;
+    color: var(--primary-color);
+    margin-bottom: 60px;
+    font-weight: 900;
 }
 
 .features-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 30px;
     max-width: 1200px;
     margin: 0 auto;
-    position: relative;
-    z-index: 1;
 }
 
 .feature-card {
     background: white;
     padding: 40px 30px;
-    border-radius: 20px;
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.4s ease;
-    border: 1px solid var(--accent-color);
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-top: 4px solid var(--accent-color);
 }
 
 .feature-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-    border-color: var(--primary-color);
-}
-
-.feature-icon {
-    font-size: 3.5rem;
-    margin-bottom: 20px;
-    animation: iconFloat 3s ease-in-out infinite;
-}
-
-@keyframes iconFloat {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 }
 
 .feature-card h3 {
     color: var(--primary-color);
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     font-size: 1.5rem;
     font-weight: 700;
 }
@@ -336,175 +171,119 @@ body {
 }
 
 .footer p {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     font-size: 1.1rem;
-    opacity: 0.9;
 }
 
 .footer-links {
-    margin-top: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
 }
 
-.footer-links a {
+.footer-link {
     color: var(--accent-color);
     text-decoration: none;
-    margin: 0 15px;
     font-size: 1rem;
     transition: all 0.3s ease;
-    padding: 5px 15px;
-    border-radius: 20px;
+    padding: 8px 20px;
+    border-radius: 25px;
 }
 
-.footer-links a:hover {
+.footer-link:hover {
     color: white;
     background: var(--primary-color);
 }
 
-/* Responsive Design */
-@media (max-width: 1024px) {
-    .hero-content h1 {
-        font-size: 3.5rem;
-    }
-    
-    .hero-content p {
-        font-size: 1.5rem;
-    }
-    
-    .hero-content {
-        padding: 40px;
-    }
-
-    .journey-container {
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 30px;
-    }
-
-    .connector-line {
-        display: none; /* إخفاء الخطوط الرابطة على الشاشات المتوسطة */
-    }
+.separator {
+    color: var(--gray-color);
 }
 
+/* Responsive Design */
 @media (max-width: 768px) {
-    .hero-content {
-        padding: 30px;
-    }
-    
     .hero-content h1 {
-        font-size: 2.8rem;
+        font-size: 2.5rem;
     }
     
     .hero-content p {
-        font-size: 1.3rem;
-    }
-    
-    .cta-button {
-        padding: 15px 40px;
         font-size: 1.2rem;
     }
     
-    .journey-section {
-        padding: 60px 15px;
+    .cta-button {
+        padding: 15px 35px;
+        font-size: 1.1rem;
     }
 
-    .journey-section h2 {
-        font-size: 2.5rem;
+    .stats-section {
+        flex-direction: column;
+        gap: 20px;
+        padding: 40px 20px;
+    }
+
+    .stat-card {
+        border-right: none;
+        border-bottom: 2px solid var(--accent-color);
+        padding: 20px 30px;
+    }
+
+    .stat-card:last-child {
+        border-bottom: none;
+    }
+
+    .features-section h2 {
+        font-size: 2rem;
         margin-bottom: 40px;
     }
 
-    .journey-container {
+    .features-grid {
         grid-template-columns: 1fr;
-        gap: 40px;
+        gap: 20px;
     }
 
-    .journey-card {
-        padding: 35px 25px;
+    .footer-links {
+        flex-direction: column;
+        gap: 10px;
     }
 
-    .step-number {
-        top: -15px;
-        right: -15px;
-        width: 50px;
-        height: 50px;
-        font-size: 1.5rem;
-    }
-
-    .journey-icon {
-        font-size: 4rem;
-    }
-    
-    .features-section h2 {
-        font-size: 2.5rem;
+    .separator {
+        display: none;
     }
 }
 
 @media (max-width: 480px) {
-    .hero-content {
-        padding: 20px;
-    }
-    
     .hero-content h1 {
-        font-size: 2.2rem;
+        font-size: 2rem;
     }
     
     .hero-content p {
-        font-size: 1.1rem;
+        font-size: 1rem;
     }
     
     .cta-button {
         padding: 12px 30px;
         font-size: 1rem;
     }
-    
-    .journey-section {
-        padding: 40px 10px;
+
+    .stat-card h3 {
+        font-size: 2.5rem;
     }
 
-    .journey-section h2 {
-        font-size: 2rem;
-        margin-bottom: 30px;
-    }
-
-    .journey-card {
-        padding: 30px 20px;
-    }
-
-    .step-number {
-        width: 45px;
-        height: 45px;
-        font-size: 1.3rem;
-    }
-
-    .journey-icon {
-        font-size: 3.5rem;
-    }
-
-    .journey-card h3 {
-        font-size: 1.5rem;
-    }
-
-    .journey-card p {
+    .stat-card p {
         font-size: 1rem;
     }
 
-    .particle {
-        font-size: 1.5rem;
-    }
-    
     .features-section {
         padding: 50px 15px;
     }
-    
+
     .features-section h2 {
-        font-size: 2rem;
+        font-size: 1.8rem;
     }
-    
-    .footer-links a {
-        display: block;
-        margin: 5px 0;
-    }
-    
-    .footer-links span {
-        display: none;
+
+    .feature-card {
+        padding: 30px 20px;
     }
 }
 
