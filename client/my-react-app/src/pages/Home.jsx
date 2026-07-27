@@ -8,79 +8,6 @@ import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
 
 const Home = () => {
   const navigate = useNavigate();
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-  const [windowHeight, setWindowHeight] = useState(window.innerHeight);
-  const [showDescent, setShowDescent] = useState(true);
-  const [showDisappear, setShowDisappear] = useState(false);
-  const [showArcAnimation, setShowArcAnimation] = useState(false);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-      setWindowHeight(window.innerHeight);
-    };
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  // 5 كتب مع ألوان متناسقة
-  const books = Array.from({ length: 5 }, (_, i) => ({
-    id: i,
-    delay: i * 0.6,
-    emoji: ['📚', '📖', '📘', '📗', '📕'][i % 5],
-    title: ['مغامرات', 'علوم', 'تاريخ', 'فنون', 'قصص'][i % 5],
-    bgColor: ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7'][i % 5],
-    textColor: '#2c3e50',
-  }));
-
-  // نقطة البداية: في منتصف الصفحة (responsive)
-  const startX = windowWidth / 2 - 60;
-  const startY = -200;
-
-  // حساب وقت نزول آخر كتاب
-  const lastBookDelay = 4 * 0.6;
-  const descentDuration = 0.4;
-
-  useEffect(() => {
-    const disappearTimer = setTimeout(() => {
-      setShowDescent(false);
-      setShowDisappear(true);
-
-      const arcTimer = setTimeout(() => {
-        setShowDisappear(false);
-        setShowArcAnimation(true);
-      }, (books.length * 0.3 + 1.5) * 1000);
-
-      return () => clearTimeout(arcTimer);
-    }, (lastBookDelay + descentDuration + 0.5) * 1000);
-
-    return () => clearTimeout(disappearTimer);
-  }, []);
-
-  // نقاط القوس - RTL من اليمين لليسار
-  const getArcPoints = () => {
-    const points = [];
-    // Responsive margins
-    const marginX = windowWidth < 768 ? 10 : 20;
-    const arcStartX = marginX; // الشمال
-    const arcEndX = windowWidth - marginX; // اليمين
-    const arcWidth = arcEndX - arcStartX;
-    // Responsive arc height
-    const arcHeight = windowWidth < 768 ? 250 : 450;
-    
-    // Responsive step size
-    const stepSize = windowWidth < 768 ? 25 : 35;
-
-    // نبني النقاط من اليمين لليسار (RTL)
-    for (let x = arcEndX; x >= arcStartX; x -= stepSize) {
-      const t = (arcEndX - x) / arcWidth; // عكس الحساب للـ RTL
-      const y = 300 - arcHeight * Math.sin(t * Math.PI);
-      points.push({ x, y });
-    }
-    return points;
-  };
-
-  const arcPoints = getArcPoints();
 
   return (
     <div className="home-container">
@@ -110,138 +37,123 @@ const Home = () => {
         </motion.div>
       </motion.section>
 
-      {/* قسم القوس */}
-      <section className="arc-section">
-        <div className="arc-container">
-          {/* المرحلة 1: النزول من فوق لتحت من المنتصف */}
-          {showDescent && books.map((book) => (
+      {/* قسم رحلة القارئ - Journey Section */}
+      <section className="journey-section">
+        <motion.h2
+          initial={{ opacity: 0, y: -30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.8 }}
+        >
+          رحلتك في عالم القراءة
+        </motion.h2>
+
+        <div className="journey-container">
+          {[
+            {
+              step: '١',
+              icon: '📖',
+              title: 'اختر كتابك',
+              description: 'استكشف مكتبة غنية بالكتب المتنوعة',
+              color: '#FF6B6B',
+              delay: 0.2
+            },
+            {
+              step: '٢',
+              icon: '📝',
+              title: 'اقرأ وتعلم',
+              description: 'استمتع بالقراءة مع ملخصات شاملة',
+              color: '#4ECDC4',
+              delay: 0.4
+            },
+            {
+              step: '٣',
+              icon: '🎯',
+              title: 'اختبر نفسك',
+              description: 'حل الاختبارات وقيّم فهمك',
+              color: '#45B7D1',
+              delay: 0.6
+            },
+            {
+              step: '٤',
+              icon: '🏆',
+              title: 'احصل على النقاط',
+              description: 'تنافس مع الآخرين وكن الأفضل',
+              color: '#FFEAA7',
+              delay: 0.8
+            }
+          ].map((item, index) => (
             <motion.div
-              key={`descent-${book.id}`}
-              className="arc-book"
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
+              key={index}
+              className="journey-card"
+              initial={{ opacity: 0, x: index % 2 === 0 ? -100 : 100 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.6, delay: item.delay }}
+              whileHover={{ 
+                scale: 1.05,
+                rotate: index % 2 === 0 ? -2 : 2,
+                transition: { duration: 0.3 }
               }}
             >
-              <motion.div
-                className="book-card"
-                style={{
-                  backgroundColor: book.bgColor,
-                  color: book.textColor,
+              <div className="step-number" style={{ background: item.color }}>
+                {item.step}
+              </div>
+              <motion.div 
+                className="journey-icon"
+                animate={{ 
+                  y: [0, -10, 0],
+                  rotate: [0, 5, -5, 0]
                 }}
-                initial={{
-                  x: startX,
-                  y: startY,
-                  opacity: 0,
-                  scale: 0.3,
-                }}
-                animate={{
-                  x: startX,
-                  y: 300,
-                  opacity: 1,
-                  scale: 1,
-                }}
-                transition={{
-                  duration: descentDuration,
-                  delay: book.delay,
-                  ease: "easeOut",
+                transition={{ 
+                  duration: 3,
+                  repeat: Infinity,
+                  delay: item.delay
                 }}
               >
-                <span className="card-emoji">{book.emoji}</span>
-                <span className="card-title">{book.title}</span>
+                {item.icon}
               </motion.div>
+              <h3>{item.title}</h3>
+              <p>{item.description}</p>
+              
+              {/* Animated connector line */}
+              {index < 3 && (
+                <motion.div 
+                  className="connector-line"
+                  initial={{ scaleX: 0 }}
+                  whileInView={{ scaleX: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: item.delay + 0.3 }}
+                />
+              )}
             </motion.div>
           ))}
+        </div>
 
-          {/* المرحلة 2: اختفاء الكتب */}
-          {showDisappear && books.map((book, index) => (
+        {/* Floating particles background */}
+        <div className="journey-particles">
+          {[...Array(15)].map((_, i) => (
             <motion.div
-              key={`disappear-${book.id}`}
-              className="arc-book"
+              key={i}
+              className="particle"
               style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
+                left: `${Math.random() * 100}%`,
+                top: `${Math.random() * 100}%`,
+              }}
+              animate={{
+                y: [0, -30, 0],
+                opacity: [0.3, 0.8, 0.3],
+                scale: [1, 1.2, 1]
+              }}
+              transition={{
+                duration: 3 + Math.random() * 2,
+                repeat: Infinity,
+                delay: Math.random() * 2
               }}
             >
-              <motion.div
-                className="book-card"
-                style={{
-                  backgroundColor: book.bgColor,
-                  color: book.textColor,
-                }}
-                initial={{
-                  x: startX,
-                  y: 300,
-                  opacity: 1,
-                  scale: 1,
-                }}
-                animate={{
-                  x: startX,
-                  y: 300,
-                  opacity: 0,
-                  scale: 0,
-                }}
-                transition={{
-                  duration: 0.7,
-                  delay: index * 0.3,
-                  ease: "easeOut",
-                }}
-              >
-                <span className="card-emoji">{book.emoji}</span>
-                <span className="card-title">{book.title}</span>
-              </motion.div>
+              {['📚', '✨', '💡', '🎓', '⭐'][i % 5]}
             </motion.div>
           ))}
-
-          {/* المرحلة 3: الحركة النصف دائرية */}
-          {showArcAnimation && arcPoints.length > 0 && (
-            <>
-              {books.map((book, index) => (
-                <motion.div
-                  key={`arc-${book.id}`}
-                  className="arc-book arc-animation"
-                  style={{
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                  }}
-                >
-                  <motion.div
-                    className="book-card"
-                    style={{
-                      backgroundColor: book.bgColor,
-                      color: book.textColor,
-                    }}
-                    initial={{
-                      x: startX,
-                      y: 300,
-                      opacity: 0,
-                      scale: 0,
-                    }}
-                    animate={{
-                      x: arcPoints.map(p => p.x),
-                      y: arcPoints.map(p => p.y),
-                      opacity: [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.9],
-                      scale: [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.9],
-                    }}
-                    transition={{
-                      duration: 7,
-                      delay: index * 1.43,
-                      repeat: Infinity,
-                      repeatType: "loop",
-                      ease: "linear",
-                      times: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
-                    }}
-                  >
-                    <span className="card-emoji">{book.emoji}</span>
-                    <span className="card-title">{book.title}</span>
-                  </motion.div>
-                </motion.div>
-              ))}
-            </>
-          )}
         </div>
       </section>
 

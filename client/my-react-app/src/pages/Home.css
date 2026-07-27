@@ -118,89 +118,119 @@ body {
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
 }
 
-/* Arc Section */
-.arc-section {
-    width: 100%;
-     background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 70%, var(--light-color) 100%);
-    padding: 30px 0;
-    min-height: 500px;
+/* Journey Section - رحلة القارئ */
+.journey-section {
+    padding: 80px 20px;
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 70%, var(--light-color) 100%);
     position: relative;
-}
-.arc-section::after {
-    content: '📚';
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    font-size: 15rem;
-    opacity: 0.05;
-    transform: rotate(-15deg);
-   
+    overflow: hidden;
+    min-height: 600px;
 }
 
-.arc-section::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, var(--accent-color), transparent);
+.journey-section h2 {
+    text-align: center;
+    font-size: 3rem;
+    color: white;
+    margin-bottom: 60px;
+    text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.3);
+    position: relative;
+    z-index: 10;
 }
 
-.arc-container {
+.journey-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
     position: relative;
-    width: 100%;
-    height: 500px;
+    z-index: 10;
+    padding: 20px;
+}
+
+.journey-card {
+    background: white;
+    padding: 40px 30px;
+    border-radius: 25px;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+    position: relative;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    border: 3px solid var(--accent-color);
     overflow: visible;
 }
 
-.arc-book {
+.journey-card:hover {
+    box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3);
+    border-color: white;
+}
+
+.step-number {
     position: absolute;
+    top: -20px;
+    right: -20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    border: 4px solid white;
+    z-index: 5;
+}
+
+.journey-icon {
+    font-size: 5rem;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 10px 15px rgba(0, 0, 0, 0.2));
+}
+
+.journey-card h3 {
+    font-size: 1.8rem;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+.journey-card p {
+    color: var(--gray-color);
+    font-size: 1.1rem;
+    line-height: 1.6;
+}
+
+.connector-line {
+    position: absolute;
+    top: 50%;
+    left: 100%;
+    width: 40px;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent-color), transparent);
+    transform: translateY(-50%);
+    transform-origin: left;
+    z-index: 1;
+}
+
+/* Floating Particles */
+.journey-particles {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
     pointer-events: none;
+    z-index: 1;
 }
 
-/* Book Cards - تصغير الحجم قليلاً لتناسب الشكل الجديد */
-.book-card {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 130px;
-    height: 160px;
-    border-radius: 15px;
-    padding: 15px;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
-    border: 2px solid rgba(255, 255, 255, 0.5);
-    backdrop-filter: blur(5px);
-    transition: transform 0.3s ease;
-}
-
-.book-card:hover {
-    transform: scale(1.05) translateY(-5px);
-}
-
-.card-emoji {
-    font-size: 4rem;
-    margin-bottom: 8px;
-    filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.2));
-}
-
-.card-title {
-    font-size: 0.9rem;
-    font-weight: bold;
-    text-align: center;
-    color: inherit;
-    background: rgba(255, 255, 255, 0.3);
-    padding: 5px 10px;
-    border-radius: 20px;
-    width: 100%;
-}
-
-.arc-animation {
-    will-change: transform;
-    z-index: 10;
+.particle {
+    position: absolute;
+    font-size: 2rem;
+    opacity: 0.3;
+    pointer-events: none;
 }
 
 /* Features Section */
@@ -343,6 +373,15 @@ body {
     .hero-content {
         padding: 40px;
     }
+
+    .journey-container {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 30px;
+    }
+
+    .connector-line {
+        display: none; /* إخفاء الخطوط الرابطة على الشاشات المتوسطة */
+    }
 }
 
 @media (max-width: 768px) {
@@ -363,21 +402,34 @@ body {
         font-size: 1.2rem;
     }
     
-    .arc-section {
-        min-height: 450px;
+    .journey-section {
+        padding: 60px 15px;
     }
-    
-    .arc-container {
-        height: 450px;
+
+    .journey-section h2 {
+        font-size: 2.5rem;
+        margin-bottom: 40px;
     }
-    
-    .book-card {
-        width: 110px;
-        height: 140px;
+
+    .journey-container {
+        grid-template-columns: 1fr;
+        gap: 40px;
     }
-    
-    .card-emoji {
-        font-size: 3rem;
+
+    .journey-card {
+        padding: 35px 25px;
+    }
+
+    .step-number {
+        top: -15px;
+        right: -15px;
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+    }
+
+    .journey-icon {
+        font-size: 4rem;
     }
     
     .features-section h2 {
@@ -403,26 +455,39 @@ body {
         font-size: 1rem;
     }
     
-    .arc-section {
-        min-height: 400px;
+    .journey-section {
+        padding: 40px 10px;
     }
-    
-    .arc-container {
-        height: 400px;
+
+    .journey-section h2 {
+        font-size: 2rem;
+        margin-bottom: 30px;
     }
-    
-    .book-card {
-        width: 90px;
-        height: 120px;
-        padding: 10px;
+
+    .journey-card {
+        padding: 30px 20px;
     }
-    
-    .card-emoji {
-        font-size: 2.5rem;
+
+    .step-number {
+        width: 45px;
+        height: 45px;
+        font-size: 1.3rem;
     }
-    
-    .card-title {
-        font-size: 0.7rem;
+
+    .journey-icon {
+        font-size: 3.5rem;
+    }
+
+    .journey-card h3 {
+        font-size: 1.5rem;
+    }
+
+    .journey-card p {
+        font-size: 1rem;
+    }
+
+    .particle {
+        font-size: 1.5rem;
     }
     
     .features-section {
