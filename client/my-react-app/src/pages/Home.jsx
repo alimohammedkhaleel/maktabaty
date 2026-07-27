@@ -33,28 +33,8 @@ const Home = () => {
     textColor: '#2c3e50',
   }));
 
-  // نقاط القوس - للصفحات العربية RTL: من اليمين لليسار
-  const getArcPoints = () => {
-    const points = [];
-    const arcStartX = 100; // بداية من اليمين (مع margin)
-    const arcEndX = windowWidth - 100; // نهاية في اليسار
-    const arcWidth = arcEndX - arcStartX;
-    const arcHeight = 450;
-
-    // نبني النقاط من اليمين لليسار (عكس الـ loop العادي)
-    for (let x = arcEndX; x >= arcStartX; x -= 35) {
-      const t = (x - arcStartX) / arcWidth;
-      const y = 300 - arcHeight * Math.sin(t * Math.PI);
-      points.push({ x, y });
-    }
-    
-    return points;
-  };
-
-  const arcPoints = getArcPoints();
-  
-  // نقطة البداية: من اليمين (أول نقطة في الـ array)
-  const startX = arcPoints.length > 0 ? arcPoints[0].x : windowWidth - 100;
+  // نقطة البداية: في منتصف الصفحة (responsive)
+  const startX = windowWidth / 2 - 60;
   const startY = -200;
 
   // حساب وقت نزول آخر كتاب
@@ -76,6 +56,30 @@ const Home = () => {
 
     return () => clearTimeout(disappearTimer);
   }, []);
+
+  // نقاط القوس - Responsive
+  const getArcPoints = () => {
+    const points = [];
+    // Responsive margins
+    const marginX = windowWidth < 768 ? 10 : 20;
+    const arcStartX = marginX;
+    const arcEndX = windowWidth - marginX;
+    const arcWidth = arcEndX - arcStartX;
+    // Responsive arc height
+    const arcHeight = windowWidth < 768 ? 250 : 450;
+    
+    // Responsive step size
+    const stepSize = windowWidth < 768 ? 25 : 35;
+
+    for (let x = arcStartX; x <= arcEndX; x += stepSize) {
+      const t = (x - arcStartX) / arcWidth;
+      const y = 300 - arcHeight * Math.sin(t * Math.PI);
+      points.push({ x, y });
+    }
+    return points;
+  };
+
+  const arcPoints = getArcPoints();
 
   return (
     <div className="home-container">
@@ -108,7 +112,7 @@ const Home = () => {
       {/* قسم القوس */}
       <section className="arc-section">
         <div className="arc-container">
-          {/* المرحلة 1: النزول من فوق لتحت */}
+          {/* المرحلة 1: النزول من فوق لتحت من المنتصف */}
           {showDescent && books.map((book) => (
             <motion.div
               key={`descent-${book.id}`}
@@ -193,53 +197,48 @@ const Home = () => {
           {/* المرحلة 3: الحركة النصف دائرية */}
           {showArcAnimation && arcPoints.length > 0 && (
             <>
-              {books.map((book, index) => {
-                // بداية الكتاب من أول نقطة في القوس (اليمين)
-                const initialPoint = arcPoints[0];
-                
-                return (
+              {books.map((book, index) => (
+                <motion.div
+                  key={`arc-${book.id}`}
+                  className="arc-book arc-animation"
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                  }}
+                >
                   <motion.div
-                    key={`arc-${book.id}`}
-                    className="arc-book arc-animation"
+                    className="book-card"
                     style={{
-                      position: 'absolute',
-                      top: 0,
-                      left: 0,
+                      backgroundColor: book.bgColor,
+                      color: book.textColor,
+                    }}
+                    initial={{
+                      x: startX,
+                      y: 300,
+                      opacity: 0,
+                      scale: 0,
+                    }}
+                    animate={{
+                      x: arcPoints.map(p => p.x),
+                      y: arcPoints.map(p => p.y),
+                      opacity: [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.9],
+                      scale: [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.9],
+                    }}
+                    transition={{
+                      duration: 7,
+                      delay: index * 1.43,
+                      repeat: Infinity,
+                      repeatType: "loop",
+                      ease: "linear",
+                      times: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
                     }}
                   >
-                    <motion.div
-                      className="book-card"
-                      style={{
-                        backgroundColor: book.bgColor,
-                        color: book.textColor,
-                      }}
-                      initial={{
-                        x: initialPoint.x,
-                        y: initialPoint.y,
-                        opacity: 0,
-                        scale: 0,
-                      }}
-                      animate={{
-                        x: arcPoints.map(p => p.x),
-                        y: arcPoints.map(p => p.y),
-                        opacity: [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.9],
-                        scale: [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.9],
-                      }}
-                      transition={{
-                        duration: 7,
-                        delay: index * 1.43,
-                        repeat: Infinity,
-                        repeatType: "loop",
-                        ease: "linear",
-                        times: [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
-                      }}
-                    >
-                      <span className="card-emoji">{book.emoji}</span>
-                      <span className="card-title">{book.title}</span>
-                    </motion.div>
+                    <span className="card-emoji">{book.emoji}</span>
+                    <span className="card-title">{book.title}</span>
                   </motion.div>
-                );
-              })}
+                </motion.div>
+              ))}
             </>
           )}
         </div>
