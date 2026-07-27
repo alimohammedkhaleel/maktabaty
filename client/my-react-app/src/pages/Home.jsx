@@ -36,27 +36,25 @@ const Home = () => {
   // نقاط القوس - للصفحات العربية RTL: من اليمين لليسار
   const getArcPoints = () => {
     const points = [];
-    const arcStartX = 20; // الشمال (يسار)
-    const arcEndX = windowWidth - 80; // اليمين (مع margin)
+    const arcStartX = 100; // بداية من اليمين (مع margin)
+    const arcEndX = windowWidth - 100; // نهاية في اليسار
     const arcWidth = arcEndX - arcStartX;
     const arcHeight = 450;
 
-    // نبني النقاط من اليسار لليمين
-    for (let x = arcStartX; x <= arcEndX; x += 35) {
+    // نبني النقاط من اليمين لليسار (عكس الـ loop العادي)
+    for (let x = arcEndX; x >= arcStartX; x -= 35) {
       const t = (x - arcStartX) / arcWidth;
       const y = 300 - arcHeight * Math.sin(t * Math.PI);
       points.push({ x, y });
     }
     
-    // نعكس الترتيب عشان نبدأ من اليمين (RTL)
-    return points.reverse();
+    return points;
   };
 
   const arcPoints = getArcPoints();
   
-  // نقطة البداية: من اليمين (أول نقطة بعد الـ reverse)
-  // Fallback لو arcPoints فاضي
-  const startX = arcPoints.length > 0 ? arcPoints[0].x : windowWidth - 80;
+  // نقطة البداية: من اليمين (أول نقطة في الـ array)
+  const startX = arcPoints.length > 0 ? arcPoints[0].x : windowWidth - 100;
   const startY = -200;
 
   // حساب وقت نزول آخر كتاب
