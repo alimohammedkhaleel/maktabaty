@@ -37,7 +37,7 @@ const Home = () => {
   const getArcPoints = () => {
     const points = [];
     const arcStartX = 20; // الشمال (يسار)
-    const arcEndX = windowWidth - 20; // اليمين
+    const arcEndX = windowWidth - 80; // اليمين (مع margin)
     const arcWidth = arcEndX - arcStartX;
     const arcHeight = 450;
 
@@ -55,7 +55,8 @@ const Home = () => {
   const arcPoints = getArcPoints();
   
   // نقطة البداية: من اليمين (أول نقطة بعد الـ reverse)
-  const startX = arcPoints[0].x;
+  // Fallback لو arcPoints فاضي
+  const startX = arcPoints.length > 0 ? arcPoints[0].x : windowWidth - 80;
   const startY = -200;
 
   // حساب وقت نزول آخر كتاب
@@ -192,10 +193,10 @@ const Home = () => {
           ))}
 
           {/* المرحلة 3: الحركة النصف دائرية */}
-          {showArcAnimation && (
+          {showArcAnimation && arcPoints.length > 0 && (
             <>
               {books.map((book, index) => {
-                // بداية الكتاب من أول نقطة في القوس (اليسار)
+                // بداية الكتاب من أول نقطة في القوس (اليمين)
                 const initialPoint = arcPoints[0];
                 
                 return (
