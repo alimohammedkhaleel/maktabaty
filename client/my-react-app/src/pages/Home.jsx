@@ -57,13 +57,13 @@ const Home = () => {
     return () => clearTimeout(disappearTimer);
   }, []);
 
-  // نقاط القوس - Responsive
+  // نقاط القوس - RTL من اليمين لليسار
   const getArcPoints = () => {
     const points = [];
     // Responsive margins
     const marginX = windowWidth < 768 ? 10 : 20;
-    const arcStartX = marginX;
-    const arcEndX = windowWidth - marginX;
+    const arcStartX = marginX; // الشمال
+    const arcEndX = windowWidth - marginX; // اليمين
     const arcWidth = arcEndX - arcStartX;
     // Responsive arc height
     const arcHeight = windowWidth < 768 ? 250 : 450;
@@ -71,8 +71,9 @@ const Home = () => {
     // Responsive step size
     const stepSize = windowWidth < 768 ? 25 : 35;
 
-    for (let x = arcStartX; x <= arcEndX; x += stepSize) {
-      const t = (x - arcStartX) / arcWidth;
+    // نبني النقاط من اليمين لليسار (RTL)
+    for (let x = arcEndX; x >= arcStartX; x -= stepSize) {
+      const t = (arcEndX - x) / arcWidth; // عكس الحساب للـ RTL
       const y = 300 - arcHeight * Math.sin(t * Math.PI);
       points.push({ x, y });
     }

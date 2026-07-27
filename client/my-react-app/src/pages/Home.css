@@ -22,11 +22,13 @@ body {
     font-family: 'Cairo', sans-serif;
     overflow-x: hidden;
     background-color: var(--light-color);
+    direction: rtl; /* تفعيل RTL للعربي */
 }
 
 .home-container {
     width: 100%;
     overflow-x: hidden;
+    direction: rtl; /* تأكيد RTL */
 }
 
 /* Hero Section */
