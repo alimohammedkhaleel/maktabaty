@@ -33,28 +33,28 @@ const Home = () => {
     textColor: '#2c3e50',
   }));
 
-  // نقاط القوس - من اليسار (left) لليمين (right)
+  // نقاط القوس - للصفحات العربية RTL: من اليمين لليسار
   const getArcPoints = () => {
     const points = [];
-    const arcStartX = 20; // بداية الشاشة من اليسار
-    const arcEndX = windowWidth - 20; // نهاية الشاشة من اليمين
+    const arcStartX = 20; // الشمال (يسار)
+    const arcEndX = windowWidth - 20; // اليمين
     const arcWidth = arcEndX - arcStartX;
     const arcHeight = 450;
 
-    // Loop من اليسار لليمين
+    // نبني النقاط من اليسار لليمين
     for (let x = arcStartX; x <= arcEndX; x += 35) {
       const t = (x - arcStartX) / arcWidth;
       const y = 300 - arcHeight * Math.sin(t * Math.PI);
       points.push({ x, y });
     }
     
-    // النقاط مرتبة من left → right بالفعل
-    return points;
+    // نعكس الترتيب عشان نبدأ من اليمين (RTL)
+    return points.reverse();
   };
 
   const arcPoints = getArcPoints();
   
-  // نقطة البداية: من اليسار (أول نقطة في القوس)
+  // نقطة البداية: من اليمين (أول نقطة بعد الـ reverse)
   const startX = arcPoints[0].x;
   const startY = -200;
 
