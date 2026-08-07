@@ -46,10 +46,15 @@ const LibraryPresentation = ({ onComplete }) => {
     });
 
     // إخفاء الكتب الرئيسية في البداية
-    gsap.set([leftBookRef.current, rightBookRef.current], {
+    gsap.set(leftBookRef.current, {
       opacity: 0,
       scale: 0.8,
-      x: leftBookRef.current === leftBookRef.current ? -50 : 50
+      x: -50
+    });
+    gsap.set(rightBookRef.current, {
+      opacity: 0,
+      scale: 0.8,
+      x: 50
     });
 
     // إخفاء عناصر الزوايا في البداية

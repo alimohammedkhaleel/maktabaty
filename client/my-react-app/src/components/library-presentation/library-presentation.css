@@ -240,120 +240,86 @@
   background: radial-gradient(circle, rgba(230, 200, 160, 0.2) 0%, transparent 70%);
 }
 
-/* تحسينات للشاشات المتوسطة */
+/* تحسينات الشاشات التفاعلية للموبايل والتابلت */
 @media (max-width: 768px) {
   .main-content {
-    gap: 20px;
-    padding: 15px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    gap: clamp(8px, 3vw, 25px);
+    padding: 10px;
+    width: 100%;
+    max-width: 100%;
   }
 
   .main-title {
-    font-size: 2.8rem;
-    letter-spacing: 3px;
+    font-size: clamp(1.5rem, 6.5vw, 3rem);
+    letter-spacing: clamp(1px, 1vw, 4px);
+    white-space: nowrap;
+    text-align: center;
     text-shadow: 
       2px 2px 0 #E5C9A8,
-      4px 4px 0 #C4A484,
-      6px 6px 10px rgba(170, 130, 80, 0.2);
+      3px 3px 0 #C4A484,
+      5px 5px 10px rgba(170, 130, 80, 0.2);
+  }
+
+  .title-section {
+    min-width: 0;
+    flex: 1;
+    max-width: 100%;
+    padding: 0;
+    order: unset;
+  }
+
+  .left-book,
+  .right-book {
+    order: unset;
+    transform: none !important;
+    width: auto;
+    height: auto;
+    flex-shrink: 0;
+  }
+
+  .side-book {
+    width: auto;
+    height: auto;
+  }
+
+  .book-emoji {
+    font-size: clamp(2rem, 8vw, 3.8rem);
   }
 
   .corner-item {
-    width: 50px;
-    height: 65px;
+    width: 45px;
+    height: 55px;
   }
 
   .corner-icon {
-    font-size: 2rem;
+    font-size: 1.8rem;
   }
 
   .top-left-item {
-    top: 15px;
-    left: 15px;
+    top: 12px;
+    left: 12px;
   }
 
   .top-right-item {
-    top: 15px;
-    right: 15px;
+    top: 12px;
+    right: 12px;
   }
 
   .bottom-left-item {
-    bottom: 15px;
-    left: 15px;
+    bottom: 12px;
+    left: 12px;
   }
 
   .bottom-right-item {
-    bottom: 15px;
-    right: 15px;
+    bottom: 12px;
+    right: 12px;
   }
 
-  .book-emoji {
-    font-size: 3.5rem;
-  }
-
-  .side-book {
-    width: 60px;
-    height: 85px;
-  }
-
-  .float-element {
-    font-size: 1.6rem;
-  }
-  
-  .line-container {
-    height: 35px;
-  }
-  
-  .decorative-line {
-    height: 6px;
-    box-shadow: 0 3px 8px rgba(220, 160, 100, 0.3);
-  }
-  
-  .title-section {
-    min-width: 0;
-    width: 100%;
-    max-width: 340px;
-  }
-}
-
-/* تحسينات للشاشات الصغيرة */
-@media (max-width: 480px) {
-  .main-content {
-    gap: 10px;
-    flex-wrap: wrap;
-    justify-content: center;
-    padding: 10px;
-  }
-  
-  .main-title {
-    font-size: 2rem;
-    letter-spacing: 2px;
-    white-space: normal;
-    text-align: center;
-  }
-  
-  .side-book {
-    width: 55px;
-    height: 75px;
-  }
-  
-  .book-emoji {
-    font-size: 2.8rem;
-  }
-  
-  .title-section {
-    min-width: 0;
-    order: 1;
-    width: 100%;
-    max-width: 280px;
-  }
-  
-  .left-book {
-    order: 2;
-  }
-  
-  .right-book {
-    order: 3;
-  }
-  
   .line-container {
     height: 30px;
   }
@@ -361,58 +327,49 @@
   .decorative-line {
     height: 5px;
   }
+}
+
+@media (max-width: 480px) {
+  .main-content {
+    gap: clamp(6px, 2.5vw, 15px);
+    padding: 5px 10px;
+  }
+  
+  .main-title {
+    font-size: clamp(1.3rem, 6vw, 2.2rem);
+    letter-spacing: 1px;
+    white-space: nowrap;
+  }
+  
+  .book-emoji {
+    font-size: clamp(1.8rem, 7.5vw, 2.8rem);
+  }
 
   .corner-item {
-    width: 40px;
-    height: 50px;
+    width: 35px;
+    height: 45px;
   }
 
   .corner-icon {
-    font-size: 1.6rem;
-  }
-
-  .top-left-item {
-    top: 10px;
-    left: 10px;
-  }
-
-  .top-right-item {
-    top: 10px;
-    right: 10px;
-  }
-
-  .bottom-left-item {
-    bottom: 10px;
-    left: 10px;
-  }
-
-  .bottom-right-item {
-    bottom: 10px;
-    right: 10px;
-  }
-}
-
-/* شاشات صغيرة جداً (≤ 360px) */
-@media (max-width: 360px) {
-  .main-title {
-    font-size: 1.6rem;
-    letter-spacing: 1px;
-  }
-
-  .book-emoji {
-    font-size: 2.2rem;
-  }
-
-  .side-book {
-    width: 45px;
-    height: 60px;
-  }
-
-  .corner-item {
-    display: none;
+    font-size: 1.4rem;
   }
 
   .float-element {
+    font-size: 1.3rem;
+  }
+}
+
+@media (max-width: 360px) {
+  .main-title {
+    font-size: 1.15rem;
+    letter-spacing: 0.5px;
+  }
+
+  .book-emoji {
+    font-size: 1.5rem;
+  }
+
+  .corner-item {
     display: none;
   }
 }
