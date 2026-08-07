@@ -128,7 +128,10 @@
   justify-content: center;
   z-index: 25;
   position: relative;
-  min-width: 280px;
+  min-width: 0;
+  flex: 1;
+  max-width: 500px;
+  padding: 0 10px;
 }
 
 /* العنوان الرئيسي */
@@ -152,8 +155,10 @@
   visibility: visible !important;
   display: block;
   line-height: 1.2;
-  white-space: nowrap;
+  white-space: normal;
   text-align: center;
+  word-break: break-word;
+  max-width: 100%;
 }
 
 /* حاوية الخط */
@@ -238,13 +243,13 @@
 /* تحسينات للشاشات المتوسطة */
 @media (max-width: 768px) {
   .main-content {
-    gap: 25px;
+    gap: 20px;
     padding: 15px;
   }
 
   .main-title {
-    font-size: 3.2rem;
-    letter-spacing: 4px;
+    font-size: 2.8rem;
+    letter-spacing: 3px;
     text-shadow: 
       2px 2px 0 #E5C9A8,
       4px 4px 0 #C4A484,
@@ -252,25 +257,45 @@
   }
 
   .corner-item {
-    width: 60px;
-    height: 80px;
+    width: 50px;
+    height: 65px;
   }
 
   .corner-icon {
-    font-size: 2.5rem;
+    font-size: 2rem;
+  }
+
+  .top-left-item {
+    top: 15px;
+    left: 15px;
+  }
+
+  .top-right-item {
+    top: 15px;
+    right: 15px;
+  }
+
+  .bottom-left-item {
+    bottom: 15px;
+    left: 15px;
+  }
+
+  .bottom-right-item {
+    bottom: 15px;
+    right: 15px;
   }
 
   .book-emoji {
-    font-size: 4rem;
+    font-size: 3.5rem;
   }
 
   .side-book {
-    width: 70px;
-    height: 100px;
+    width: 60px;
+    height: 85px;
   }
 
   .float-element {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
   }
   
   .line-container {
@@ -283,41 +308,46 @@
   }
   
   .title-section {
-    min-width: 220px;
+    min-width: 0;
+    width: 100%;
+    max-width: 340px;
   }
 }
 
 /* تحسينات للشاشات الصغيرة */
 @media (max-width: 480px) {
   .main-content {
-    gap: 15px;
+    gap: 10px;
     flex-wrap: wrap;
+    justify-content: center;
+    padding: 10px;
   }
   
   .main-title {
-    font-size: 2.4rem;
-    letter-spacing: 3px;
+    font-size: 2rem;
+    letter-spacing: 2px;
     white-space: normal;
     text-align: center;
   }
   
   .side-book {
-    width: 60px;
-    height: 80px;
+    width: 55px;
+    height: 75px;
   }
   
   .book-emoji {
-    font-size: 3.2rem;
+    font-size: 2.8rem;
   }
   
   .title-section {
-    min-width: 180px;
-    order: 2;
+    min-width: 0;
+    order: 1;
     width: 100%;
+    max-width: 280px;
   }
   
   .left-book {
-    order: 1;
+    order: 2;
   }
   
   .right-book {
@@ -330,6 +360,60 @@
   
   .decorative-line {
     height: 5px;
+  }
+
+  .corner-item {
+    width: 40px;
+    height: 50px;
+  }
+
+  .corner-icon {
+    font-size: 1.6rem;
+  }
+
+  .top-left-item {
+    top: 10px;
+    left: 10px;
+  }
+
+  .top-right-item {
+    top: 10px;
+    right: 10px;
+  }
+
+  .bottom-left-item {
+    bottom: 10px;
+    left: 10px;
+  }
+
+  .bottom-right-item {
+    bottom: 10px;
+    right: 10px;
+  }
+}
+
+/* شاشات صغيرة جداً (≤ 360px) */
+@media (max-width: 360px) {
+  .main-title {
+    font-size: 1.6rem;
+    letter-spacing: 1px;
+  }
+
+  .book-emoji {
+    font-size: 2.2rem;
+  }
+
+  .side-book {
+    width: 45px;
+    height: 60px;
+  }
+
+  .corner-item {
+    display: none;
+  }
+
+  .float-element {
+    display: none;
   }
 }
 
